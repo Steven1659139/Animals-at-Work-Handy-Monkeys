@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <JobDef>
+    <defName>AAW_TaillerPierre</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_TaillerPierre</driverClass>
+    <reportString>cutting stone blocks.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_PrendrePercuteur</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_PrendreOutil</driverClass>
+    <reportString>equipping a hammerstone.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_PrendreCouteau</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_PrendreOutil</driverClass>
+    <reportString>equipping a stone knife.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_TaillerCouteaux</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_TaillerCouteaux</driverClass>
+    <reportString>knapping stone knives.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_PreparerCroquettes</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_PreparerCroquettes</driverClass>
+    <reportString>making kibble.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_RapporterMorceau</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_RapporterMorceau</driverClass>
+    <reportString>hauling a stone chunk.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_TaillerPercuteur</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_TaillerPercuteur</driverClass>
+    <reportString>knapping a hammerstone.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>AAW_DebiterCarcasse</defName>
+    <driverClass>AnimalsAtWork.Monkeys.JobDriver_DebiterCarcasse</driverClass>
+    <reportString>butchering a small carcass.</reportString>
+  </JobDef>
+
+</Defs>

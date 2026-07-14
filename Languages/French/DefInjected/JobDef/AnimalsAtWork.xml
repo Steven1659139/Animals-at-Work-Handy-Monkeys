@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AAW_TaillerPierre.reportString>taille des blocs de pierre.</AAW_TaillerPierre.reportString>
+  <AAW_PrendrePercuteur.reportString>s'équipe d'un percuteur.</AAW_PrendrePercuteur.reportString>
+  <AAW_PreparerCroquettes.reportString>prépare des croquettes.</AAW_PreparerCroquettes.reportString>
+  <AAW_RapporterMorceau.reportString>rapporte un morceau de pierre.</AAW_RapporterMorceau.reportString>
+  <AAW_TaillerPercuteur.reportString>taille un percuteur.</AAW_TaillerPercuteur.reportString>
+  <AAW_PrendreCouteau.reportString>s'équipe d'un couteau de pierre.</AAW_PrendreCouteau.reportString>
+  <AAW_TaillerCouteaux.reportString>débite des couteaux de pierre.</AAW_TaillerCouteaux.reportString>
+  <AAW_DebiterCarcasse.reportString>débite une petite carcasse.</AAW_DebiterCarcasse.reportString>
+</LanguageData>

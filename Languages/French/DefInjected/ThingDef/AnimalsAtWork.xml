@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AAW_Percuteur.label>percuteur de pierre</AAW_Percuteur.label>
+  <AAW_Percuteur.description>Un galet dur emmanché de bois, façonné pour frapper la pierre au bon angle. Chaque singe artisan s'équipe du sien, le porte partout et finit par le briser à l'ouvrage.</AAW_Percuteur.description>
+  <AAW_Couteau.label>couteau de pierre</AAW_Couteau.label>
+  <AAW_Couteau.description>Un éclat tranchant frappé d'un nucléus de pierre, la base gainée de corde. L'outil de boucherie des singes artisans : léger, affûté, vite émoussé. Un singe muni d'un percuteur peut frapper des couteaux neufs d'un morceau de pierre.</AAW_Couteau.description>
+  <AAW_AtelierDesSinges.label>atelier des singes</AAW_AtelierDesSinges.label>
+  <AAW_AtelierDesSinges.description>Un établi bas garni de percuteurs, de coins et de pierres à tailler. Les singes dressés à l'artisanat viennent s'y équiper puis débitent en blocs les morceaux entreposés à proximité (12 cases), rapatrient les morceaux éloignés, débitent le petit gibier au couteau de pierre ou préparent des croquettes. À court d'outils, les singes en façonnent des neufs d'un morceau de pierre. L'atelier stocke jusqu'à trois outils de pierre ; chaque tâche peut être activée ou non.</AAW_AtelierDesSinges.description>
+</LanguageData>

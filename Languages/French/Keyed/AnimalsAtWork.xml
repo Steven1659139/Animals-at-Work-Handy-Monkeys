@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AAW_OutilBrise>Le {1} de {0} s'est brisé.</AAW_OutilBrise>
+  <AAW_NiveauNovice>novice</AAW_NiveauNovice>
+  <AAW_NiveauCalleuses>mains calleuses</AAW_NiveauCalleuses>
+  <AAW_NiveauMaitre>maître artisan</AAW_NiveauMaitre>
+  <AAW_InspectArtisanat>{0} : {1} ({2} %)</AAW_InspectArtisanat>
+  <AAW_MetierTaille>Taille de pierre</AAW_MetierTaille>
+  <AAW_MetierBoucherie>Boucherie</AAW_MetierBoucherie>
+  <AAW_TachesLabel>Tâches : {0}</AAW_TachesLabel>
+  <AAW_TachesAucune>aucune</AAW_TachesAucune>
+  <AAW_VocationTaille>taille de pierre</AAW_VocationTaille>
+  <AAW_VocationCroquettes>croquettes</AAW_VocationCroquettes>
+  <AAW_VocationBoucherie>boucherie</AAW_VocationBoucherie>
+  <AAW_ToggleTailleDesc>Autoriser les singes à débiter en blocs les morceaux de pierre proches de l'atelier, en rapatriant les morceaux éloignés au besoin.</AAW_ToggleTailleDesc>
+  <AAW_ToggleCroquettesDesc>Autoriser les singes à préparer des croquettes à l'atelier avec la viande et les végétaux à proximité.</AAW_ToggleCroquettesDesc>
+  <AAW_ToggleBoucherieDesc>Autoriser les singes à débiter le petit gibier près de l'atelier. Un maître boucher débite des bêtes de toute taille. Couteau de pierre requis.</AAW_ToggleBoucherieDesc>
+</LanguageData>

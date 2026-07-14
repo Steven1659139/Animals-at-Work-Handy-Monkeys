@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Même point d'ancrage que les modules Plowing et Herding : les insertions
+       successives coexistent sans conflit. -->
+  <Operation Class="PatchOperationInsert">
+    <xpath>Defs/ThinkTreeDef[defName="Animal"]//li[@Class="ThinkNode_ConditionalTrainableCompleted"][trainable="Forage"]</xpath>
+    <value>
+      <li Class="ThinkNode_ConditionalTrainableCompleted">
+        <trainable>AAW_Artisanat</trainable>
+        <subNodes>
+          <li Class="ThinkNode_Tagger">
+            <tagToGive>TrainedAnimalBehavior</tagToGive>
+            <subNodes>
+              <li Class="AnimalsAtWork.Monkeys.JobGiver_Tailleur" />
+            </subNodes>
+          </li>
+        </subNodes>
+      </li>
+    </value>
+  </Operation>
+
+</Patch>

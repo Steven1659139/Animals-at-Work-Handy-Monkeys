@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Intermediate : le singe vanilla (trainability Intermediate, taille 0.32)
+       doit pouvoir apprendre son propre métier. Réservé aux espèces à mains
+       habiles via ModExtension_MainsHabiles (patch Harmony). -->
+  <TrainableDef>
+    <defName>AAW_Artisanat</defName>
+    <label>crafting</label>
+    <description>The animal works near a monkey workshop: it equips a hammerstone to cut stone chunks into blocks, hauls distant chunks back to the bench, butchers small game with a stone knife, and makes kibble from meat and vegetables. Reserved for nimble-handed species: the monkey, in the base game. Stonecutting and butchery are each learned with experience (visible when selected): a novice learns twice as fast beside a working master of the same craft, a master stonecutter knaps its own hammerstone, a master butcher field-dresses game of any size, and any monkey with a hammerstone strikes fresh knives from a chunk.</description>
+    <icon>UI/Icons/Trainables/Haul</icon>
+    <listPriority>320</listPriority>
+    <difficulty>220</difficulty>
+    <requiredTrainability>Intermediate</requiredTrainability>
+    <steps>5</steps>
+    <prerequisites>
+      <li>Tameness</li>
+    </prerequisites>
+    <minBodySize>0.25</minBodySize>
+    <defaultTrainable>true</defaultTrainable>
+    <tags>
+      <li>Work</li>
+    </tags>
+  </TrainableDef>
+
+</Defs>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- L'outil du tailleur : chaque singe s'en équipe un (inventaire, onglet
+       Équipement) et l'use à chaque morceau débité (~25 morceaux). -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>AAW_Percuteur</defName>
+    <label>hammerstone</label>
+    <description>A hard cobble hafted on wood, shaped to strike stone at just the right angle. Each crafter monkey equips its own, carries it everywhere, and eventually shatters it at work.</description>
+    <graphicData>
+      <texPath>Things/Item/AAW_Percuteur</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <stuffCategories>
+      <li>Stony</li>
+    </stuffCategories>
+    <costStuffCount>15</costStuffCount>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <Mass>1.5</Mass>
+      <WorkToMake>1500</WorkToMake>
+      <Flammability>0.4</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>Manufactured</li>
+    </thingCategories>
+    <recipeMaker>
+      <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+      <workSkill>Crafting</workSkill>
+      <recipeUsers>
+        <li>CraftingSpot</li>
+      </recipeUsers>
+      <displayPriority>151</displayPriority>
+    </recipeMaker>
+  </ThingDef>
+
+  <!-- L'outil du boucher : un éclat tranchant. Requis pour débiter le petit
+       gibier, usé à chaque carcasse (~15). Les singes au percuteur en
+       frappent trois d'un morceau de pierre quand il n'en reste plus. -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>AAW_Couteau</defName>
+    <label>stone knife</label>
+    <description>A sharp flake struck from a stone core, its base wrapped in cord. The butchering tool of crafter monkeys: light, keen, and quick to dull. Monkeys carrying a hammerstone can strike fresh knives from a stone chunk.</description>
+    <graphicData>
+      <texPath>Things/Item/AAW_Couteau</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <stuffCategories>
+      <li>Stony</li>
+    </stuffCategories>
+    <costStuffCount>10</costStuffCount>
+    <statBases>
+      <MaxHitPoints>60</MaxHitPoints>
+      <Mass>0.4</Mass>
+      <WorkToMake>1200</WorkToMake>
+      <Flammability>0.4</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>Manufactured</li>
+    </thingCategories>
+    <recipeMaker>
+      <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+      <workSkill>Crafting</workSkill>
+      <recipeUsers>
+        <li>CraftingSpot</li>
+      </recipeUsers>
+      <displayPriority>152</displayPriority>
+    </recipeMaker>
+  </ThingDef>
+
+</Defs>

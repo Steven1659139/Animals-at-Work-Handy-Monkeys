@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <packageId>royaltea.animalsatwork.monkeys</packageId>
+  <name>Animals at Work — Handy Monkeys</name>
+  <author>Royal-Tea</author>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <description>Every beast earns its keep.
+
+Third module of the Animals at Work series: crafter monkeys.
+
+- "Crafting" training, reserved for nimble-handed species (the monkey in the base game; animal mods can opt in their own species with a two-line patch).
+- The monkey workshop: a low workbench that stores up to three hammerstones, with a toggle for each task.
+- Stonecutting: each monkey equips its own hammerstone (visible in its Gear tab), cuts nearby stone chunks into blocks, and eventually shatters its tool at work.
+- Chunk hauling: when the bench runs dry, monkeys drag distant chunks (up to 40 cells) back to the workshop.
+- Small-game butchery: with a stone knife, monkeys butcher small wild carcasses near the workshop. Meat and leather, never your own beasts.
+- Kibble: with meat and vegetables nearby, monkeys feed your other working beasts.
+- Mastery: every job makes a monkey better, from novice (slow, 60% yield) to master craftsman (fast, 90%). Progress shows when you select it. Mind your veterans.
+- Passing it on: a novice working beside a master learns twice as fast. When tools run out, a master knaps its own hammerstone, and any monkey with a hammerstone strikes fresh stone knives from a chunk.
+
+The oldest craft in the world, returned to its inventors. Requires Harmony. Every Animals at Work module is standalone. French translation included (traduction française incluse).
+
+Also in the series: Plowing, Herding Dogs, Pest Control.
+
+───────── Version française ─────────
+
+Chaque bête gagne sa pitance.
+
+Troisième module de la série Animals at Work : les singes artisans.
+
+- Dressage « artisanat », réservé aux espèces à mains habiles (le singe du jeu de base ; les mods d'animaux peuvent inscrire leurs espèces avec un patch de deux lignes).
+- L'atelier des singes : un établi bas qui range jusqu'à trois percuteurs, avec un bouton par tâche.
+- La taille de pierre : chaque singe s'équipe de son propre percuteur (visible dans son onglet Équipement), débite les morceaux de pierre voisins en blocs, et finit par briser son outil à l'ouvrage.
+- Le rapatriement : quand l'établi est à sec, les singes traînent les morceaux éloignés (jusqu'à 40 cases) vers l'atelier.
+- La boucherie de petit gibier : au couteau de pierre, les singes débitent les petites carcasses sauvages près de l'atelier. Viande et cuir, jamais vos propres bêtes.
+- Les croquettes : avec viande et légumes à portée, les singes nourrissent vos autres bêtes au travail.
+- La maîtrise : chaque ouvrage améliore le singe, du novice (lent, 60 % de rendement) au maître artisan (rapide, 90 %). Le progrès s'affiche à la sélection. Ménagez vos vétérans.
+- La transmission : un novice à l'ouvrage près d'un maître apprend deux fois plus vite. À court d'outils, un maître taille son propre percuteur, et tout singe muni d'un percuteur tire des couteaux neufs d'un morceau de pierre.
+
+Le plus vieil artisanat du monde, rendu à ses inventeurs. Nécessite Harmony. Chaque module Animals at Work est autonome.
+
+Autres modules : labour animal, chiens de berger, lutte antiparasitaire.</description>
+</ModMetaData>

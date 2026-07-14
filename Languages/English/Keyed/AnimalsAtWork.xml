@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AAW_OutilBrise>{0}'s {1} broke.</AAW_OutilBrise>
+  <AAW_NiveauNovice>novice</AAW_NiveauNovice>
+  <AAW_NiveauCalleuses>calloused hands</AAW_NiveauCalleuses>
+  <AAW_NiveauMaitre>master craftsman</AAW_NiveauMaitre>
+  <AAW_InspectArtisanat>{0}: {1} ({2}%)</AAW_InspectArtisanat>
+  <AAW_MetierTaille>Stonecutting</AAW_MetierTaille>
+  <AAW_MetierBoucherie>Butchery</AAW_MetierBoucherie>
+  <AAW_TachesLabel>Tasks: {0}</AAW_TachesLabel>
+  <AAW_TachesAucune>none</AAW_TachesAucune>
+  <AAW_VocationTaille>stonecutting</AAW_VocationTaille>
+  <AAW_VocationCroquettes>kibble</AAW_VocationCroquettes>
+  <AAW_VocationBoucherie>butchery</AAW_VocationBoucherie>
+  <AAW_ToggleTailleDesc>Allow monkeys to cut nearby stone chunks into blocks at this workshop, hauling distant chunks back when needed.</AAW_ToggleTailleDesc>
+  <AAW_ToggleCroquettesDesc>Allow monkeys to make kibble at this workshop from nearby meat and vegetables.</AAW_ToggleCroquettesDesc>
+  <AAW_ToggleBoucherieDesc>Allow monkeys to butcher small wild carcasses near this workshop. A master butcher can field-dress carcasses of any size. Requires a stone knife.</AAW_ToggleBoucherieDesc>
+</LanguageData>

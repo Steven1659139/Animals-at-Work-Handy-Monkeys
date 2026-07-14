@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- L'atelier est aussi un râtelier (Building_Storage, structure copiée de
+       l'étagère vanilla) : il stocke jusqu'à 3 percuteurs que les colons y
+       apportent, et où les singes viennent s'équiper. Le composant Vocation
+       (gizmo) permet de le dédier à la taille ou aux croquettes. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>AAW_AtelierDesSinges</defName>
+    <label>monkey workshop</label>
+    <description>A low workbench stocked with strikers, wedges and knapping stones. Monkeys trained in crafting come equip themselves here, cut nearby stone chunks (12 cells) into blocks, drag distant chunks back to the bench, butcher small game with stone knives, or make kibble. When tools run out, monkeys knap new ones from a stone chunk. Stores up to three stone tools; each task can be toggled on or off.</description>
+    <thingClass>Building_Storage</thingClass>
+    <graphicData>
+      <texPath>Things/Building/AAW_AtelierDesSinges</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shadowData>
+        <volume>(0.85, 0.3, 0.7)</volume>
+      </shadowData>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <fillPercent>0.35</fillPercent>
+    <statBases>
+      <MaxHitPoints>120</MaxHitPoints>
+      <WorkToBuild>1800</WorkToBuild>
+      <Mass>12</Mass>
+      <Flammability>1.0</Flammability>
+    </statBases>
+    <size>(1,1)</size>
+    <costList>
+      <WoodLog>75</WoodLog>
+    </costList>
+    <designationCategory>Production</designationCategory>
+    <rotatable>false</rotatable>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <constructEffect>ConstructWood</constructEffect>
+    <surfaceType>Item</surfaceType>
+    <canOverlapZones>false</canOverlapZones>
+    <inspectorTabs>
+      <li>ITab_Storage</li>
+    </inspectorTabs>
+    <building>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <maxItemsInCell>3</maxItemsInCell>
+      <blueprintClass>Blueprint_Storage</blueprintClass>
+      <fixedStorageSettings>
+        <filter>
+          <thingDefs>
+            <li>AAW_Percuteur</li>
+            <li>AAW_Couteau</li>
+          </thingDefs>
+        </filter>
+      </fixedStorageSettings>
+      <defaultStorageSettings>
+        <priority>Important</priority>
+        <filter>
+          <thingDefs>
+            <li>AAW_Percuteur</li>
+            <li>AAW_Couteau</li>
+          </thingDefs>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+    <comps>
+      <li Class="AnimalsAtWork.Monkeys.CompProperties_Atelier" />
+    </comps>
+  </ThingDef>
+
+</Defs>
