@@ -17,39 +17,45 @@
   <loadAfter>
     <li>brrainz.harmony</li>
   </loadAfter>
-  <description>Every beast earns its keep.
+  <description>Monkeys cut stone, haul chunks, butcher small game and make kibble at their own workbench. This is the third module of the Animals at Work series.
 
-Third module of the Animals at Work series: crafter monkeys.
+WHAT MONKEYS DO
 
-- "Crafting" training, reserved for nimble-handed species (the monkey in the base game; animal mods can opt in their own species with a two-line patch).
-- The monkey workshop: a low workbench that stores up to three hammerstones, with a toggle for each task.
-- Stonecutting: each monkey equips its own hammerstone (visible in its Gear tab), cuts nearby stone chunks into blocks, and eventually shatters its tool at work.
-- Chunk hauling: when the bench runs dry, monkeys drag distant chunks (up to 40 cells) back to the workshop.
-- Small-game butchery: with a stone knife, monkeys butcher small wild carcasses near the workshop. Meat and leather, never your own beasts.
-- Kibble: with meat and vegetables nearby, monkeys feed your other working beasts.
-- Mastery: every job makes a monkey better, from novice (slow, 60% yield) to master craftsman (fast, 90%). Progress shows when you select it. Mind your veterans.
-- Passing it on: a novice working beside a master learns twice as fast. When tools run out, a master knaps its own hammerstone, and any monkey with a hammerstone strikes fresh stone knives from a chunk.
+- A "crafting" training is available, reserved for species with nimble hands. That is the monkey in the base game, and animal mods can add their own species with a two-line patch.
+- The monkey workshop is a low workbench that stores up to three hammerstones and has one toggle per task.
+- For stonecutting, each monkey equips its own hammerstone, visible in its Gear tab, and cuts nearby stone chunks into blocks. The tool eventually breaks at work.
+- When the bench runs out of chunks, monkeys drag distant ones back to the workshop from up to 40 cells away.
+- With a stone knife, monkeys butcher small wild carcasses near the workshop. They produce meat and leather, and never touch your own animals.
+- With meat and vegetables within reach, monkeys make kibble to feed your other working animals.
 
-The oldest craft in the world, returned to its inventors. Requires Harmony. Every Animals at Work module is standalone. French translation included (traduction française incluse).
+GETTING BETTER AT IT
+
+- Every job improves a monkey, from novice, which is slow and yields 60%, to master craftsman, which is fast and yields 90%. Its progress is shown when you select it.
+- A novice working beside a master learns twice as fast. When tools run out, a master knaps its own hammerstone, and any monkey holding a hammerstone can strike fresh stone knives from a chunk.
+
+Requires Harmony. Each Animals at Work module works on its own. English and French are both included.
 
 Also in the series: Plowing, Herding Dogs, Pest Control.
 
 ───────── Version française ─────────
 
-Chaque bête gagne sa pitance.
+Les singes taillent la pierre, rapportent les morceaux, débitent le petit gibier et préparent des croquettes à leur propre établi. C'est le troisième module de la série Animals at Work.
 
-Troisième module de la série Animals at Work : les singes artisans.
+CE QUE FONT LES SINGES
 
-- Dressage « artisanat », réservé aux espèces à mains habiles (le singe du jeu de base ; les mods d'animaux peuvent inscrire leurs espèces avec un patch de deux lignes).
-- L'atelier des singes : un établi bas qui range jusqu'à trois percuteurs, avec un bouton par tâche.
-- La taille de pierre : chaque singe s'équipe de son propre percuteur (visible dans son onglet Équipement), débite les morceaux de pierre voisins en blocs, et finit par briser son outil à l'ouvrage.
-- Le rapatriement : quand l'établi est à sec, les singes traînent les morceaux éloignés (jusqu'à 40 cases) vers l'atelier.
-- La boucherie de petit gibier : au couteau de pierre, les singes débitent les petites carcasses sauvages près de l'atelier. Viande et cuir, jamais vos propres bêtes.
-- Les croquettes : avec viande et légumes à portée, les singes nourrissent vos autres bêtes au travail.
-- La maîtrise : chaque ouvrage améliore le singe, du novice (lent, 60 % de rendement) au maître artisan (rapide, 90 %). Le progrès s'affiche à la sélection. Ménagez vos vétérans.
-- La transmission : un novice à l'ouvrage près d'un maître apprend deux fois plus vite. À court d'outils, un maître taille son propre percuteur, et tout singe muni d'un percuteur tire des couteaux neufs d'un morceau de pierre.
+- Un dressage « artisanat » est disponible, réservé aux espèces à mains habiles. C'est le singe dans le jeu de base, et les mods d'animaux peuvent ajouter leurs espèces avec un patch de deux lignes.
+- L'atelier des singes est un établi bas qui range jusqu'à trois percuteurs et comporte un bouton par tâche.
+- Pour la taille de pierre, chaque singe s'équipe de son propre percuteur, visible dans son onglet Équipement, et débite en blocs les morceaux de pierre voisins. L'outil finit par se briser à l'ouvrage.
+- Quand l'établi n'a plus de morceaux, les singes vont en traîner d'autres jusqu'à l'atelier, jusqu'à 40 cases de distance.
+- Au couteau de pierre, les singes débitent les petites carcasses sauvages près de l'atelier. Ils en tirent viande et cuir, et ne touchent jamais à vos propres bêtes.
+- Avec de la viande et des légumes à portée, les singes préparent des croquettes pour nourrir vos autres animaux au travail.
 
-Le plus vieil artisanat du monde, rendu à ses inventeurs. Nécessite Harmony. Chaque module Animals at Work est autonome.
+LA PROGRESSION
+
+- Chaque ouvrage améliore le singe, du novice, lent et au rendement de 60 %, au maître artisan, rapide et au rendement de 90 %. Sa progression s'affiche quand vous le sélectionnez.
+- Un novice qui travaille à côté d'un maître apprend deux fois plus vite. À court d'outils, un maître taille son propre percuteur, et tout singe muni d'un percuteur peut tirer des couteaux de pierre neufs d'un morceau.
+
+Nécessite Harmony. Chaque module Animals at Work fonctionne seul.
 
 Autres modules : labour animal, chiens de berger, lutte antiparasitaire.</description>
 </ModMetaData>
