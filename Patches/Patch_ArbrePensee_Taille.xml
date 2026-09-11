@@ -2,7 +2,9 @@
 <Patch>
 
   <!-- Même point d'ancrage que les modules Plowing et Herding : les insertions
-       successives coexistent sans conflit. -->
+       successives coexistent sans conflit. Ce nœud « Forage » porte un
+       MayRequire Odyssey dans Core, mais les patches s'appliquent avant que
+       MayRequire soit évalué : l'insertion fonctionne aussi sans Odyssey. -->
   <Operation Class="PatchOperationInsert">
     <xpath>Defs/ThinkTreeDef[defName="Animal"]//li[@Class="ThinkNode_ConditionalTrainableCompleted"][trainable="Forage"]</xpath>
     <value>

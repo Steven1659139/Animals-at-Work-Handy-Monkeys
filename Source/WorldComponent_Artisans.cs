@@ -21,11 +21,28 @@ namespace AnimalsAtWork.Monkeys
         private List<int> tmpIdsBoucherie;
         private List<float> tmpXpBoucherie;
 
+        // Le registre est consulté depuis les prédicats de recherche du JobGiver
+        // et depuis le panneau d'inspection, à chaque image : on garde
+        // l'instance sous la main au lieu de parcourir les composants du monde
+        // à chaque appel. Le constructeur la remplace à chaque nouveau monde.
+        private static WorldComponent_Artisans instance;
+
         public WorldComponent_Artisans(World world) : base(world)
         {
+            instance = this;
         }
 
-        public static WorldComponent_Artisans Instance => Find.World.GetComponent<WorldComponent_Artisans>();
+        public static WorldComponent_Artisans Instance
+        {
+            get
+            {
+                if (instance == null || instance.world != Find.World)
+                {
+                    instance = Find.World.GetComponent<WorldComponent_Artisans>();
+                }
+                return instance;
+            }
+        }
 
         public float Niveau(Pawn pawn, Metier metier)
         {

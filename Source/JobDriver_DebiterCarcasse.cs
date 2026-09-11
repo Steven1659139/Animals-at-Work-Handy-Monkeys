@@ -3,7 +3,6 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace AnimalsAtWork.Monkeys
 {
@@ -11,12 +10,17 @@ namespace AnimalsAtWork.Monkeys
     // de pierre : viande et cuir selon sa maîtrise de boucher, du sang au sol,
     // et le couteau s'use. Plus la bête est grosse, plus l'ouvrage est long
     // et sanglant.
-    public class JobDriver_DebiterCarcasse : JobDriver
+    public class JobDriver_DebiterCarcasse : JobDriver_Ouvrage
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
-        {
-            return pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
-        }
+        protected override Metier MetierExerce => Metier.Boucherie;
+
+        protected override ThingDef OutilRequis => AAW_DefOf.AAW_Couteau;
+
+        protected override string Effet => "ButcherFlesh";
+
+        protected override string Son => "Recipe_ButcherCorpseFlesh";
+
+        protected override float FacteurDuree => FacteurGabarit();
 
         // Rapporté au petit gibier : 1 pour tout ce qui tient sous le plafond
         // novice, puis proportionnel au gabarit (un muffalo ≈ 5, un thrumbo ≈ 8).
@@ -27,43 +31,28 @@ namespace AnimalsAtWork.Monkeys
                 carcasse.InnerPawn.RaceProps.baseBodySize / JobGiver_Tailleur.TailleGibierMax);
         }
 
-        protected override IEnumerable<Toil> MakeNewToils()
+        protected override void Terminer()
         {
-            this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
-            this.FailOn(() => OutilUtility.OutilEquipe(pawn, AAW_DefOf.AAW_Couteau) == null);
+            Corpse carcasse = (Corpse)job.targetA.Thing;
+            IntVec3 position = carcasse.Position;
+            Map map = pawn.Map;
+            List<Thing> produits = carcasse.ButcherProducts(pawn,
+                MaitriseUtility.Rendement(pawn, Metier.Boucherie)).ToList();
+            ThingDef sang = carcasse.InnerPawn.RaceProps.BloodDef;
+            int flaques = Mathf.Clamp(Mathf.RoundToInt(3f * FacteurGabarit()), 3, 12);
+            carcasse.Destroy();
 
-            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
-
-            int duree = Mathf.RoundToInt(
-                MaitriseUtility.DureeTravail(pawn, Metier.Boucherie) * FacteurGabarit());
-            Toil boucherie = Toils_General.Wait(duree);
-            boucherie.WithProgressBarToilDelay(TargetIndex.A);
-            Ambiance.Habiller(boucherie, TargetIndex.A, "ButcherFlesh", "Recipe_ButcherCorpseFlesh");
-            yield return boucherie;
-
-            yield return Toils_General.Do(delegate
+            if (sang != null)
             {
-                Corpse carcasse = (Corpse)job.targetA.Thing;
-                IntVec3 position = carcasse.Position;
-                Map map = pawn.Map;
-                List<Thing> produits = carcasse.ButcherProducts(pawn,
-                    MaitriseUtility.Rendement(pawn, Metier.Boucherie)).ToList();
-                ThingDef sang = carcasse.InnerPawn.RaceProps.BloodDef;
-                int flaques = Mathf.Clamp(Mathf.RoundToInt(3f * FacteurGabarit()), 3, 12);
-                carcasse.Destroy();
+                FilthMaker.TryMakeFilth(position, map, sang, flaques);
+            }
+            for (int i = 0; i < produits.Count; i++)
+            {
+                GenPlace.TryPlaceThing(produits[i], position, map, ThingPlaceMode.Near);
+            }
 
-                if (sang != null)
-                {
-                    FilthMaker.TryMakeFilth(position, map, sang, flaques);
-                }
-                for (int i = 0; i < produits.Count; i++)
-                {
-                    GenPlace.TryPlaceThing(produits[i], position, map, ThingPlaceMode.Near);
-                }
-
-                MaitriseUtility.GagnerExperience(pawn, Metier.Boucherie);
-                OutilUtility.UserOutil(pawn, AAW_DefOf.AAW_Couteau);
-            });
+            MaitriseUtility.GagnerExperience(pawn, Metier.Boucherie);
+            OutilUtility.UserOutil(pawn, AAW_DefOf.AAW_Couteau);
         }
     }
 }

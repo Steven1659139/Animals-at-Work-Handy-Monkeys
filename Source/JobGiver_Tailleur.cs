@@ -17,7 +17,6 @@ namespace AnimalsAtWork.Monkeys
         public const float Rayon = 12f;
         public const float RayonRapatriement = 40f;
         public const float TailleGibierMax = 0.5f;
-        private const int IngredientsRequis = 20;
         private const int MorceauxEnAttenteMax = 3;
 
         // Throttle par singe des scans coûteux (même motif que le berger de
@@ -83,8 +82,8 @@ namespace AnimalsAtWork.Monkeys
 
         private static Job TravailImmediat(List<Thing> ateliers, Map map, Pawn singe)
         {
-            bool percuteur = OutilUtility.OutilEquipe(singe, AAW_DefOf.AAW_Percuteur) != null;
-            bool couteau = OutilUtility.OutilEquipe(singe, AAW_DefOf.AAW_Couteau) != null;
+            bool percuteur = OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur);
+            bool couteau = OutilUtility.Porte(singe, AAW_DefOf.AAW_Couteau);
             if (!percuteur && !couteau)
             {
                 return null;
@@ -99,7 +98,7 @@ namespace AnimalsAtWork.Monkeys
                     Thing morceau = MorceauProche(atelier, map, singe, Rayon);
                     if (morceau != null)
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPierre, morceau, atelier);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPierre, morceau);
                     }
                 }
                 if (couteau && Autorise(comp, TacheAtelier.Boucherie))
@@ -107,7 +106,7 @@ namespace AnimalsAtWork.Monkeys
                     Thing carcasse = CarcasseProche(atelier, map, singe);
                     if (carcasse != null)
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_DebiterCarcasse, carcasse, atelier);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_DebiterCarcasse, carcasse);
                     }
                 }
             }
@@ -118,21 +117,22 @@ namespace AnimalsAtWork.Monkeys
 
         private static Job Equipement(List<Thing> ateliers, Map map, Pawn singe)
         {
-            bool aPercuteur = OutilUtility.OutilEquipe(singe, AAW_DefOf.AAW_Percuteur) != null;
-            bool aCouteau = OutilUtility.OutilEquipe(singe, AAW_DefOf.AAW_Couteau) != null;
+            bool aPercuteur = OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur);
+            bool aCouteau = OutilUtility.Porte(singe, AAW_DefOf.AAW_Couteau);
 
-            if (!aPercuteur && TravailTailleExiste(ateliers, map, singe))
+            if (!aPercuteur)
             {
-                Job job = ChercherOutil(map, singe, AAW_DefOf.AAW_Percuteur, AAW_DefOf.AAW_PrendrePercuteur);
-                if (job != null)
+                Thing morceau = MorceauATailler(ateliers, map, singe);
+                if (morceau != null)
                 {
-                    return job;
-                }
-                // Aucun percuteur nulle part : un maître tailleur se taille le sien.
-                if (MaitriseUtility.EstMaitre(singe, Metier.Taille))
-                {
-                    Thing morceau = MorceauPourOutil(ateliers, map, singe);
-                    if (morceau != null)
+                    Job job = ChercherOutil(map, singe, AAW_DefOf.AAW_Percuteur, AAW_DefOf.AAW_PrendrePercuteur);
+                    if (job != null)
+                    {
+                        return job;
+                    }
+                    // Aucun percuteur nulle part : un maître tailleur se taille
+                    // le sien, dans le morceau même qui attend d'être taillé.
+                    if (MaitriseUtility.EstMaitre(singe, Metier.Taille))
                     {
                         return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPercuteur, morceau);
                     }
@@ -163,7 +163,7 @@ namespace AnimalsAtWork.Monkeys
 
         private static Job Rapatriement(List<Thing> ateliers, Map map, Pawn singe)
         {
-            if (OutilUtility.OutilEquipe(singe, AAW_DefOf.AAW_Percuteur) == null)
+            if (!OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur))
             {
                 return null;
             }
@@ -223,17 +223,23 @@ namespace AnimalsAtWork.Monkeys
             return comp == null || comp.Autorise(tache);
         }
 
-        private static bool TravailTailleExiste(List<Thing> ateliers, Map map, Pawn singe)
+        // Un morceau qui attend d'être taillé près d'un atelier qui autorise
+        // la taille, ou null s'il n'y a pas de travail de ce côté.
+        private static Thing MorceauATailler(List<Thing> ateliers, Map map, Pawn singe)
         {
             for (int i = 0; i < ateliers.Count; i++)
             {
-                if (Autorise(ateliers[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille)
-                    && MorceauProche(ateliers[i], map, singe, RayonRapatriement) != null)
+                if (!Autorise(ateliers[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille))
                 {
-                    return true;
+                    continue;
+                }
+                Thing morceau = MorceauProche(ateliers[i], map, singe, RayonRapatriement);
+                if (morceau != null)
+                {
+                    return morceau;
                 }
             }
-            return false;
+            return null;
         }
 
         private static bool TravailBoucherieExiste(List<Thing> ateliers, Map map, Pawn singe)
@@ -281,7 +287,6 @@ namespace AnimalsAtWork.Monkeys
                 atelier.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Chunk),
                 PathEndMode.Touch, TraverseParms.For(singe), rayon,
                 t => !t.IsForbidden(singe)
-                     && t.Position.InHorDistOf(atelier.Position, rayon)
                      && t.def.butcherProducts != null && t.def.butcherProducts.Count > 0
                      && singe.CanReserve(t)
                      && (filtre == null || filtre(t)));
@@ -289,26 +294,27 @@ namespace AnimalsAtWork.Monkeys
 
         private static Thing CarcasseProche(Thing atelier, Map map, Pawn singe)
         {
+            // La maîtrise ne change pas d'une carcasse à l'autre : lue une fois,
+            // pas dans le prédicat.
+            bool maitre = MaitriseUtility.EstMaitre(singe, Metier.Boucherie);
             return GenClosest.ClosestThingReachable(
                 atelier.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Corpse),
                 PathEndMode.Touch, TraverseParms.For(singe), Rayon,
                 t => !t.IsForbidden(singe)
-                     && t.Position.InHorDistOf(atelier.Position, Rayon)
                      && singe.CanReserve(t)
-                     && EstGibierAdmissible(t, singe));
+                     && EstGibierAdmissible(t, maitre));
         }
 
         // Gibier admissible : animal sauvage frais, jamais les bêtes de la
         // colonie. Un novice s'en tient au petit gibier (pas plus gros qu'un
         // chat) ; un maître boucher débite au sol des bêtes de toute taille.
-        public static bool EstGibierAdmissible(Thing t, Pawn singe)
+        private static bool EstGibierAdmissible(Thing t, bool maitre)
         {
             return t is Corpse carcasse
                 && carcasse.InnerPawn.RaceProps.Animal
                 && carcasse.InnerPawn.Faction != Faction.OfPlayer
                 && carcasse.GetRotStage() == RotStage.Fresh
-                && (carcasse.InnerPawn.RaceProps.baseBodySize <= TailleGibierMax
-                    || MaitriseUtility.EstMaitre(singe, Metier.Boucherie));
+                && (maitre || carcasse.InnerPawn.RaceProps.baseBodySize <= TailleGibierMax);
         }
 
         private static Thing NourritureProche(Thing atelier, Map map, Pawn singe,
@@ -319,10 +325,9 @@ namespace AnimalsAtWork.Monkeys
                 ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree),
                 PathEndMode.Touch, TraverseParms.For(singe), Rayon,
                 t => !t.IsForbidden(singe)
-                     && t.Position.InHorDistOf(atelier.Position, Rayon)
                      && t != exclu
                      && EstCategorie(t, categorie)
-                     && t.stackCount >= IngredientsRequis
+                     && t.stackCount >= JobDriver_PreparerCroquettes.IngredientsRequis
                      && singe.CanReserve(t));
         }
 

@@ -28,15 +28,7 @@ namespace AnimalsAtWork.Monkeys
                 Thing pile = job.targetA.Thing;
                 IntVec3 position = pile.Position;
                 Map map = pawn.Map;
-                Thing unite = pile.SplitOff(1);
-                if (unite.Spawned)
-                {
-                    unite.DeSpawn();
-                }
-                if (!pawn.inventory.innerContainer.TryAdd(unite, false))
-                {
-                    GenPlace.TryPlaceThing(unite, position, map, ThingPlaceMode.Near);
-                }
+                OutilUtility.RangerDansInventaire(pawn, pile.SplitOff(1), position, map);
             });
         }
     }

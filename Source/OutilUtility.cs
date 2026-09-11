@@ -13,10 +13,6 @@ namespace AnimalsAtWork.Monkeys
         // L'outil de ce type que l'animal porte sur lui, s'il y en a un.
         public static Thing OutilEquipe(Pawn pawn, ThingDef outil)
         {
-            if (pawn.inventory == null)
-            {
-                return null;
-            }
             ThingOwner contenu = pawn.inventory.innerContainer;
             for (int i = 0; i < contenu.Count; i++)
             {
@@ -26,6 +22,27 @@ namespace AnimalsAtWork.Monkeys
                 }
             }
             return null;
+        }
+
+        public static bool Porte(Pawn pawn, ThingDef outil)
+        {
+            return OutilEquipe(pawn, outil) != null;
+        }
+
+        // Range l'objet dans l'inventaire du singe. Refusé (inventaire plein),
+        // il est posé au sol près de la position donnée. Vrai s'il est sur lui.
+        public static bool RangerDansInventaire(Pawn pawn, Thing objet, IntVec3 position, Map map)
+        {
+            if (objet.Spawned)
+            {
+                objet.DeSpawn();
+            }
+            if (pawn.inventory.innerContainer.TryAdd(objet, false))
+            {
+                return true;
+            }
+            GenPlace.TryPlaceThing(objet, position, map, ThingPlaceMode.Near);
+            return false;
         }
 
         // L'outil porté s'use ; brisé, le singe ira s'en procurer un neuf.
@@ -58,10 +75,7 @@ namespace AnimalsAtWork.Monkeys
             Thing production = ThingMaker.MakeThing(outil, etoffe);
             production.stackCount = quantite;
             Thing unite = production.stackCount > 1 ? production.SplitOff(1) : production;
-            if (!pawn.inventory.innerContainer.TryAdd(unite, false))
-            {
-                GenPlace.TryPlaceThing(unite, position, map, ThingPlaceMode.Near);
-            }
+            RangerDansInventaire(pawn, unite, position, map);
             if (unite != production)
             {
                 GenPlace.TryPlaceThing(production, position, map, ThingPlaceMode.Near);

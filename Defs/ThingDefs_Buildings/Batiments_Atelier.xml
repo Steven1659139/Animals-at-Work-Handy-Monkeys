@@ -2,9 +2,10 @@
 <Defs>
 
   <!-- L'atelier est aussi un râtelier (Building_Storage, structure copiée de
-       l'étagère vanilla) : il stocke jusqu'à 3 percuteurs que les colons y
-       apportent, et où les singes viennent s'équiper. Le composant Vocation
-       (gizmo) permet de le dédier à la taille ou aux croquettes. -->
+       l'étagère vanilla) : il stocke jusqu'à 3 outils de pierre, percuteurs
+       ou couteaux, que les colons y apportent et où les singes viennent
+       s'équiper. CompAtelier ajoute trois bascules (taille, croquettes,
+       boucherie) qui disent quelles tâches les singes y font. -->
   <ThingDef ParentName="BuildingBase">
     <defName>AAW_AtelierDesSinges</defName>
     <label>monkey workshop</label>

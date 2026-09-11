@@ -12,7 +12,9 @@ namespace AnimalsAtWork.Monkeys
     // singe : 60 à 90 % de ça). Interrompu, il repose ce qu'il transporte.
     public class JobDriver_PreparerCroquettes : JobDriver
     {
-        private const int IngredientsRequis = 20;
+        // Part prélevée sur chaque pile ; le JobGiver exige des piles au moins
+        // aussi grosses.
+        public const int IngredientsRequis = 20;
         private const int CroquettesBase = 50;
 
         private Thing viandePortee;
@@ -27,8 +29,9 @@ namespace AnimalsAtWork.Monkeys
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            return pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed)
-                && pawn.Reserve(job.targetB, job, 1, -1, null, errorOnFailed);
+            // On ne réserve que la part prélevée, pas la pile entière.
+            return pawn.Reserve(job.targetA, job, 1, IngredientsRequis, null, errorOnFailed)
+                && pawn.Reserve(job.targetB, job, 1, IngredientsRequis, null, errorOnFailed);
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -68,7 +71,9 @@ namespace AnimalsAtWork.Monkeys
 
             Toil preparation = Toils_General.Wait(MaitriseUtility.DureeTravail(pawn, Metier.Boucherie));
             preparation.WithProgressBarToilDelay(TargetIndex.C);
-            preparation.FailOn(() => viandePortee == null || vegetalPorte == null);
+            // Les deux ingrédients doivent encore être sur lui : un objet
+            // détruit ou sorti de l'inventaire en cours de route arrête tout.
+            preparation.FailOn(() => !PorteEncore(viandePortee) || !PorteEncore(vegetalPorte));
             Ambiance.Habiller(preparation, TargetIndex.C, "Cook", "Recipe_CookMeal");
             yield return preparation;
 
@@ -89,20 +94,17 @@ namespace AnimalsAtWork.Monkeys
             });
         }
 
-        // Prélève la part sur la pile et la range dans l'inventaire du singe.
+        private bool PorteEncore(Thing ingredient)
+        {
+            return ingredient != null && pawn.inventory.innerContainer.Contains(ingredient);
+        }
+
+        // Prélève la part sur la pile et la range dans l'inventaire du singe ;
+        // null si l'inventaire a refusé (la part est alors au sol).
         private Thing Prendre(Thing pile)
         {
             Thing part = pile.SplitOff(IngredientsRequis);
-            if (part.Spawned)
-            {
-                part.DeSpawn();
-            }
-            if (!pawn.inventory.innerContainer.TryAdd(part, false))
-            {
-                GenPlace.TryPlaceThing(part, pawn.Position, pawn.Map, ThingPlaceMode.Near);
-                return null;
-            }
-            return part;
+            return OutilUtility.RangerDansInventaire(pawn, part, pawn.Position, pawn.Map) ? part : null;
         }
 
         // Job interrompu avant l'ouvrage : le singe repose l'ingrédient porté.
