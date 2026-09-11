@@ -3,7 +3,7 @@
   <v1.6>
     <li>/</li>
     <li>1.6</li>
-    <li IfModActive="Ludeon.RimWorld.Odyssey">/Compat/1.6/Odyssey</li>
+    <li IfModActive="Ludeon.RimWorld.Odyssey">Compat/1.6/Odyssey</li>
     <li IfModActive="el.kenshifauna">Compat/1.6/el.kenshifauna</li>
     <li IfModActive="ellenot.vaelkorrcreatures">Compat/1.6/ellenot.vaelkorrcreatures</li>
     <li IfModActive="erin.fluffyfauna">Compat/1.6/erin.fluffyfauna</li>
