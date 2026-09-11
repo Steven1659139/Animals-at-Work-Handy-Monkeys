@@ -16,6 +16,12 @@
   </modDependencies>
   <loadAfter>
     <li>brrainz.harmony</li>
+
+    <li>el.kenshifauna</li>
+    <li>ellenot.vaelkorrcreatures</li>
+    <li>erin.fluffyfauna</li>
+    <li>jtc.nordberg</li>
+    <li>Romyashi.WrithingTree</li>
   </loadAfter>
   <description>Every beast earns its keep.
 

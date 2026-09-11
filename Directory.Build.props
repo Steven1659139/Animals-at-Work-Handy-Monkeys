@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <None Include="LoadFolders.xml" />
+  </ItemGroup>
+</Project>
