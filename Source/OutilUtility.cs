@@ -8,96 +8,96 @@ namespace AnimalsAtWork.Monkeys
     // à chaque ouvrage, brisés au bout de leur vie.
     public static class OutilUtility
     {
-        private const int UsureParOuvrage = 4; // percuteur ~25 ouvrages, couteau ~15
+        private const int WearPerWork = 4; // percuteur ~25 ouvrages, couteau ~15
 
         // L'outil de ce type que l'animal porte sur lui, s'il y en a un.
-        public static Thing OutilEquipe(Pawn pawn, ThingDef outil)
+        public static Thing EquippedTool(Pawn pawn, ThingDef tool)
         {
-            ThingOwner contenu = pawn.inventory.innerContainer;
-            for (int i = 0; i < contenu.Count; i++)
+            ThingOwner contents = pawn.inventory.innerContainer;
+            for (int i = 0; i < contents.Count; i++)
             {
-                if (contenu[i].def == outil)
+                if (contents[i].def == tool)
                 {
-                    return contenu[i];
+                    return contents[i];
                 }
             }
             return null;
         }
 
-        public static bool Porte(Pawn pawn, ThingDef outil)
+        public static bool Carries(Pawn pawn, ThingDef tool)
         {
-            return OutilEquipe(pawn, outil) != null;
+            return EquippedTool(pawn, tool) != null;
         }
 
         // Range l'objet dans l'inventaire du singe. Refusé (inventaire plein),
         // il est posé au sol près de la position donnée. Vrai s'il est sur lui.
-        public static bool RangerDansInventaire(Pawn pawn, Thing objet, IntVec3 position, Map map)
+        public static bool StoreInInventory(Pawn pawn, Thing item, IntVec3 position, Map map)
         {
-            if (objet.Spawned)
+            if (item.Spawned)
             {
-                objet.DeSpawn();
+                item.DeSpawn();
             }
-            if (pawn.inventory.innerContainer.TryAdd(objet, false))
+            if (pawn.inventory.innerContainer.TryAdd(item, false))
             {
                 return true;
             }
-            GenPlace.TryPlaceThing(objet, position, map, ThingPlaceMode.Near);
+            GenPlace.TryPlaceThing(item, position, map, ThingPlaceMode.Near);
             return false;
         }
 
         // L'outil porté s'use ; brisé, le singe ira s'en procurer un neuf.
-        public static void UserOutil(Pawn pawn, ThingDef outil)
+        public static void WearTool(Pawn pawn, ThingDef tool)
         {
-            Thing porte = OutilEquipe(pawn, outil);
-            if (porte == null)
+            Thing carried = EquippedTool(pawn, tool);
+            if (carried == null)
             {
                 return;
             }
-            porte.HitPoints -= UsureParOuvrage;
-            if (porte.HitPoints <= 0)
+            carried.HitPoints -= WearPerWork;
+            if (carried.HitPoints <= 0)
             {
-                string nom = porte.def.label;
-                porte.Destroy();
-                Messages.Message("AAW_OutilBrise".Translate(pawn.LabelShortCap, nom),
+                string name = carried.def.label;
+                carried.Destroy();
+                Messages.Message("AAW_OutilBrise".Translate(pawn.LabelShortCap, name),
                     pawn, MessageTypeDefOf.NeutralEvent);
             }
         }
 
         // Façonne `quantite` outils de la pierre du morceau ; le singe en
         // garde un sur lui (au sol si l'inventaire refuse), le reste au sol.
-        public static void TaillerDepuisMorceau(Pawn pawn, Thing morceau, ThingDef outil, int quantite)
+        public static void KnapFromChunk(Pawn pawn, Thing chunk, ThingDef tool, int count)
         {
-            IntVec3 position = morceau.Position;
+            IntVec3 position = chunk.Position;
             Map map = pawn.Map;
-            ThingDef etoffe = EtoffeDuMorceau(morceau, outil);
-            morceau.Destroy();
+            ThingDef stuff = StuffOfChunk(chunk, tool);
+            chunk.Destroy();
 
-            Thing production = ThingMaker.MakeThing(outil, etoffe);
-            production.stackCount = quantite;
-            Thing unite = production.stackCount > 1 ? production.SplitOff(1) : production;
-            RangerDansInventaire(pawn, unite, position, map);
-            if (unite != production)
+            Thing production = ThingMaker.MakeThing(tool, stuff);
+            production.stackCount = count;
+            Thing unit = production.stackCount > 1 ? production.SplitOff(1) : production;
+            StoreInInventory(pawn, unit, position, map);
+            if (unit != production)
             {
                 GenPlace.TryPlaceThing(production, position, map, ThingPlaceMode.Near);
             }
         }
 
         // L'outil hérite de la pierre du morceau (blocs = étoffe Stony).
-        private static ThingDef EtoffeDuMorceau(Thing morceau, ThingDef outil)
+        private static ThingDef StuffOfChunk(Thing chunk, ThingDef tool)
         {
-            var produits = morceau.def.butcherProducts;
-            if (produits != null)
+            var products = chunk.def.butcherProducts;
+            if (products != null)
             {
-                for (int i = 0; i < produits.Count; i++)
+                for (int i = 0; i < products.Count; i++)
                 {
-                    ThingDef d = produits[i].thingDef;
+                    ThingDef d = products[i].thingDef;
                     if (d.IsStuff && d.stuffProps.categories.Contains(StuffCategoryDefOf.Stony))
                     {
                         return d;
                     }
                 }
             }
-            return GenStuff.DefaultStuffFor(outil);
+            return GenStuff.DefaultStuffFor(tool);
         }
     }
 }

@@ -15,14 +15,14 @@ namespace AnimalsAtWork.Monkeys
         protected abstract Metier MetierExerce { get; }
 
         // Outil que le singe doit porter du début à la fin ; null si aucun.
-        protected virtual ThingDef OutilRequis => null;
+        protected virtual ThingDef RequiredTool => null;
 
-        protected abstract string Effet { get; }
+        protected abstract string Effect { get; }
 
-        protected abstract string Son { get; }
+        protected abstract string Sound { get; }
 
         // Multiplie la durée de base du métier (1 par défaut).
-        protected virtual float FacteurDuree => 1f;
+        protected virtual float DurationFactor => 1f;
 
         // Le temps de travail écoulé, la cible est encore là : produire.
         protected abstract void Terminer();
@@ -35,20 +35,20 @@ namespace AnimalsAtWork.Monkeys
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
-            ThingDef outil = OutilRequis;
-            if (outil != null)
+            ThingDef tool = RequiredTool;
+            if (tool != null)
             {
-                this.FailOn(() => !OutilUtility.Porte(pawn, outil));
+                this.FailOn(() => !OutilUtility.Carries(pawn, tool));
             }
 
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
 
-            int duree = Mathf.RoundToInt(
-                MaitriseUtility.DureeTravail(pawn, MetierExerce) * FacteurDuree);
-            Toil travail = Toils_General.Wait(duree);
-            travail.WithProgressBarToilDelay(TargetIndex.A);
-            Ambiance.Habiller(travail, TargetIndex.A, Effet, Son);
-            yield return travail;
+            int duration = Mathf.RoundToInt(
+                MaitriseUtility.WorkDuration(pawn, MetierExerce) * DurationFactor);
+            Toil work = Toils_General.Wait(duration);
+            work.WithProgressBarToilDelay(TargetIndex.A);
+            Ambiance.Dress(work, TargetIndex.A, Effect, Sound);
+            yield return work;
 
             yield return Toils_General.Do(Terminer);
         }

@@ -25,38 +25,38 @@ namespace AnimalsAtWork.Monkeys
     // (gizmos à bascule) et lues par le JobGiver. Tout est permis par défaut.
     public class CompAtelier : ThingComp
     {
-        private static Texture2D iconeBoucherie;
+        private static Texture2D butcheryIcon;
 
-        private bool taille = true;
-        private bool croquettes = true;
-        private bool boucherie = true;
+        private bool knapping = true;
+        private bool kibble = true;
+        private bool butchery = true;
 
-        public bool Autorise(TacheAtelier tache)
+        public bool Allowed(TacheAtelier task)
         {
-            switch (tache)
+            switch (task)
             {
-                case TacheAtelier.Taille: return taille;
-                case TacheAtelier.Croquettes: return croquettes;
-                default: return boucherie;
+                case TacheAtelier.Taille: return knapping;
+                case TacheAtelier.Croquettes: return kibble;
+                default: return butchery;
             }
         }
 
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref taille, "AAW_taille", true);
-            Scribe_Values.Look(ref croquettes, "AAW_croquettes", true);
-            Scribe_Values.Look(ref boucherie, "AAW_boucherie", true);
+            Scribe_Values.Look(ref knapping, "AAW_taille", true);
+            Scribe_Values.Look(ref kibble, "AAW_croquettes", true);
+            Scribe_Values.Look(ref butchery, "AAW_boucherie", true);
             // Migration des sauvegardes à vocation unique (avant les cases à cocher).
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
-                string vocation = null;
-                Scribe_Values.Look(ref vocation, "AAW_vocation");
-                if (vocation != null && vocation != "Tout")
+                string calling = null;
+                Scribe_Values.Look(ref calling, "AAW_vocation");
+                if (calling != null && calling != "Tout")
                 {
-                    taille = vocation == "Taille";
-                    croquettes = vocation == "Croquettes";
-                    boucherie = vocation == "Boucherie";
+                    knapping = calling == "Taille";
+                    kibble = calling == "Croquettes";
+                    butchery = calling == "Boucherie";
                 }
             }
         }
@@ -72,58 +72,58 @@ namespace AnimalsAtWork.Monkeys
                 defaultLabel = "AAW_VocationTaille".Translate(),
                 defaultDesc = "AAW_ToggleTailleDesc".Translate(),
                 icon = AAW_DefOf.AAW_Percuteur.uiIcon,
-                isActive = () => taille,
-                toggleAction = delegate { taille = !taille; }
+                isActive = () => knapping,
+                toggleAction = delegate { knapping = !knapping; }
             };
             yield return new Command_Toggle
             {
                 defaultLabel = "AAW_VocationCroquettes".Translate(),
                 defaultDesc = "AAW_ToggleCroquettesDesc".Translate(),
                 icon = ThingDefOf.Kibble.uiIcon,
-                isActive = () => croquettes,
-                toggleAction = delegate { croquettes = !croquettes; }
+                isActive = () => kibble,
+                toggleAction = delegate { kibble = !kibble; }
             };
             yield return new Command_Toggle
             {
                 defaultLabel = "AAW_VocationBoucherie".Translate(),
                 defaultDesc = "AAW_ToggleBoucherieDesc".Translate(),
-                icon = IconeBoucherie(),
-                isActive = () => boucherie,
-                toggleAction = delegate { boucherie = !boucherie; }
+                icon = ButcheryIcon(),
+                isActive = () => butchery,
+                toggleAction = delegate { butchery = !butchery; }
             };
         }
 
         public override string CompInspectStringExtra()
         {
-            return "AAW_TachesLabel".Translate(ListeTaches());
+            return "AAW_TachesLabel".Translate(TaskList());
         }
 
-        private string ListeTaches()
+        private string TaskList()
         {
-            StringBuilder liste = new StringBuilder();
-            if (taille) Ajouter(liste, "AAW_VocationTaille".Translate());
-            if (croquettes) Ajouter(liste, "AAW_VocationCroquettes".Translate());
-            if (boucherie) Ajouter(liste, "AAW_VocationBoucherie".Translate());
-            return liste.Length > 0 ? liste.ToString() : "AAW_TachesAucune".Translate().ToString();
+            StringBuilder list = new StringBuilder();
+            if (knapping) Add(list, "AAW_VocationTaille".Translate());
+            if (kibble) Add(list, "AAW_VocationCroquettes".Translate());
+            if (butchery) Add(list, "AAW_VocationBoucherie".Translate());
+            return list.Length > 0 ? list.ToString() : "AAW_TachesAucune".Translate().ToString();
         }
 
-        private static void Ajouter(StringBuilder liste, string tache)
+        private static void Add(StringBuilder list, string task)
         {
-            if (liste.Length > 0)
+            if (list.Length > 0)
             {
-                liste.Append(", ");
+                list.Append(", ");
             }
-            liste.Append(tache);
+            list.Append(task);
         }
 
-        private Texture2D IconeBoucherie()
+        private Texture2D ButcheryIcon()
         {
-            if (iconeBoucherie == null)
+            if (butcheryIcon == null)
             {
-                iconeBoucherie = DefDatabase<ThingDef>.GetNamedSilentFail("Meat_Cow")?.uiIcon
+                butcheryIcon = DefDatabase<ThingDef>.GetNamedSilentFail("Meat_Cow")?.uiIcon
                     ?? parent.def.uiIcon;
             }
-            return iconeBoucherie;
+            return butcheryIcon;
         }
     }
 }

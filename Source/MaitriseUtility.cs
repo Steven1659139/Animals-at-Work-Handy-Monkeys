@@ -12,68 +12,68 @@ namespace AnimalsAtWork.Monkeys
     // La maîtrise d'artisan, adossée au registre de monde WorldComponent_Artisans.
     public static class MaitriseUtility
     {
-        public const float SeuilMaitre = 0.7f;
-        private const float GainParOuvrage = 0.012f;
-        private const float RayonMentor = 10f;
-        private const float MultiplicateurMentor = 2f;
+        public const float MasterThreshold = 0.7f;
+        private const float GainPerWork = 0.012f;
+        private const float MentorRadius = 10f;
+        private const float MentorMultiplier = 2f;
 
-        public static float Niveau(Pawn pawn, Metier metier)
+        public static float Level(Pawn pawn, Metier trade)
         {
-            return WorldComponent_Artisans.Instance.Niveau(pawn, metier);
+            return WorldComponent_Artisans.Instance.Level(pawn, trade);
         }
 
-        public static bool EstMaitre(Pawn pawn, Metier metier)
+        public static bool IsMaster(Pawn pawn, Metier trade)
         {
-            return Niveau(pawn, metier) >= SeuilMaitre;
+            return Level(pawn, trade) >= MasterThreshold;
         }
 
-        public static void GagnerExperience(Pawn pawn, Metier metier)
+        public static void GainExperience(Pawn pawn, Metier trade)
         {
-            float gain = GainParOuvrage;
-            if (!EstMaitre(pawn, metier) && MentorAuTravailProche(pawn, metier))
+            float gain = GainPerWork;
+            if (!IsMaster(pawn, trade) && NearbyWorkingMentor(pawn, trade))
             {
-                gain *= MultiplicateurMentor;
+                gain *= MentorMultiplier;
             }
-            WorldComponent_Artisans.Instance.Gagner(pawn, metier, gain);
+            WorldComponent_Artisans.Instance.Gain(pawn, trade, gain);
         }
 
-        public static string Etiquette(float niveau)
+        public static string Tag(float level)
         {
-            if (niveau >= SeuilMaitre) return "AAW_NiveauMaitre".Translate();
-            if (niveau >= 0.35f) return "AAW_NiveauCalleuses".Translate();
+            if (level >= MasterThreshold) return "AAW_NiveauMaitre".Translate();
+            if (level >= 0.35f) return "AAW_NiveauCalleuses".Translate();
             return "AAW_NiveauNovice".Translate();
         }
 
         // Rendement : 60 % novice → 90 % maître (colon = 100 %).
-        public static float Rendement(Pawn pawn, Metier metier)
+        public static float Yield(Pawn pawn, Metier trade)
         {
-            return 0.6f + 0.3f * Niveau(pawn, metier);
+            return 0.6f + 0.3f * Level(pawn, trade);
         }
 
         // Durée de travail : 1800 ticks novice → 900 maître.
-        public static int DureeTravail(Pawn pawn, Metier metier)
+        public static int WorkDuration(Pawn pawn, Metier trade)
         {
-            return 1800 - (int)(900f * Niveau(pawn, metier));
+            return 1800 - (int)(900f * Level(pawn, trade));
         }
 
         // Transmission du savoir : un maître du même métier, à l'ouvrage à
         // proximité, double la progression de l'élève. Un maître tailleur
         // n'apprend rien à un apprenti boucher.
-        private static bool MentorAuTravailProche(Pawn eleve, Metier metier)
+        private static bool NearbyWorkingMentor(Pawn apprentice, Metier trade)
         {
-            if (!eleve.Spawned)
+            if (!apprentice.Spawned)
             {
                 return false;
             }
-            var voisins = eleve.Map.mapPawns.SpawnedPawnsInFaction(eleve.Faction);
-            for (int i = 0; i < voisins.Count; i++)
+            var neighbors = apprentice.Map.mapPawns.SpawnedPawnsInFaction(apprentice.Faction);
+            for (int i = 0; i < neighbors.Count; i++)
             {
-                Pawn voisin = voisins[i];
-                if (voisin != eleve
-                    && voisin.Position.InHorDistOf(eleve.Position, RayonMentor)
-                    && voisin.def.HasModExtension<ModExtension_MainsHabiles>()
-                    && EstMaitre(voisin, metier)
-                    && MetierDuJob(voisin.CurJobDef) == metier)
+                Pawn neighbor = neighbors[i];
+                if (neighbor != apprentice
+                    && neighbor.Position.InHorDistOf(apprentice.Position, MentorRadius)
+                    && neighbor.def.HasModExtension<ModExtension_MainsHabiles>()
+                    && IsMaster(neighbor, trade)
+                    && MetierDuJob(neighbor.CurJobDef) == trade)
                 {
                     return true;
                 }

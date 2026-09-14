@@ -15,20 +15,20 @@ namespace AnimalsAtWork.Monkeys
             {
                 return;
             }
-            AjouterLigne(__instance, Metier.Taille, "AAW_MetierTaille", ref __result);
-            AjouterLigne(__instance, Metier.Boucherie, "AAW_MetierBoucherie", ref __result);
+            AddLine(__instance, Metier.Taille, "AAW_MetierTaille", ref __result);
+            AddLine(__instance, Metier.Boucherie, "AAW_MetierBoucherie", ref __result);
         }
 
-        private static void AjouterLigne(Pawn pawn, Metier metier, string cle, ref string texte)
+        private static void AddLine(Pawn pawn, Metier trade, string key, ref string text)
         {
-            float niveau = MaitriseUtility.Niveau(pawn, metier);
-            if (niveau <= 0f)
+            float level = MaitriseUtility.Level(pawn, trade);
+            if (level <= 0f)
             {
                 return;
             }
-            string ligne = "AAW_InspectArtisanat".Translate(
-                cle.Translate(), MaitriseUtility.Etiquette(niveau), (niveau * 100f).ToString("F0"));
-            texte = texte.NullOrEmpty() ? ligne : texte + "\n" + ligne;
+            string line = "AAW_InspectArtisanat".Translate(
+                key.Translate(), MaitriseUtility.Tag(level), (level * 100f).ToString("F0"));
+            text = text.NullOrEmpty() ? line : text + "\n" + line;
         }
     }
 }

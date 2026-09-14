@@ -14,12 +14,12 @@ namespace AnimalsAtWork.Monkeys
     {
         // L'ancienne clé de sauvegarde (unique maîtrise) devient la taille :
         // les vétérans des vieilles parties restent des tailleurs accomplis.
-        private Dictionary<int, float> tailleurs = new Dictionary<int, float>();
-        private Dictionary<int, float> bouchers = new Dictionary<int, float>();
-        private List<int> tmpIdsTaille;
-        private List<float> tmpXpTaille;
-        private List<int> tmpIdsBoucherie;
-        private List<float> tmpXpBoucherie;
+        private Dictionary<int, float> knappers = new Dictionary<int, float>();
+        private Dictionary<int, float> butchers = new Dictionary<int, float>();
+        private List<int> tmpKnappingIds;
+        private List<float> tmpKnappingXp;
+        private List<int> tmpButcheryIds;
+        private List<float> tmpButcheryXp;
 
         // Le registre est consulté depuis les prédicats de recherche du JobGiver
         // et depuis le panneau d'inspection, à chaque image : on garde
@@ -44,59 +44,59 @@ namespace AnimalsAtWork.Monkeys
             }
         }
 
-        public float Niveau(Pawn pawn, Metier metier)
+        public float Level(Pawn pawn, Metier trade)
         {
-            return Registre(metier).TryGetValue(pawn.thingIDNumber, out float xp) ? xp : 0f;
+            return Registre(trade).TryGetValue(pawn.thingIDNumber, out float xp) ? xp : 0f;
         }
 
-        public void Gagner(Pawn pawn, Metier metier, float gain)
+        public void Gain(Pawn pawn, Metier trade, float gain)
         {
-            Registre(metier)[pawn.thingIDNumber] = Mathf.Min(1f, Niveau(pawn, metier) + gain);
+            Registre(trade)[pawn.thingIDNumber] = Mathf.Min(1f, Level(pawn, trade) + gain);
         }
 
-        private Dictionary<int, float> Registre(Metier metier)
+        private Dictionary<int, float> Registre(Metier trade)
         {
-            return metier == Metier.Boucherie ? bouchers : tailleurs;
+            return trade == Metier.Boucherie ? butchers : knappers;
         }
 
         // Purge quotidienne : oublie les artisans qui n'existent plus.
         public override void WorldComponentTick()
         {
             base.WorldComponentTick();
-            if ((tailleurs.Count == 0 && bouchers.Count == 0)
+            if ((knappers.Count == 0 && butchers.Count == 0)
                 || Find.TickManager.TicksGame % 60000 != 317)
             {
                 return;
             }
-            HashSet<int> vivants = new HashSet<int>();
+            HashSet<int> alive = new HashSet<int>();
             List<Pawn> pawns = PawnsFinder.All_AliveOrDead;
             for (int i = 0; i < pawns.Count; i++)
             {
                 if (!pawns[i].Dead)
                 {
-                    vivants.Add(pawns[i].thingIDNumber);
+                    alive.Add(pawns[i].thingIDNumber);
                 }
             }
-            tailleurs.RemoveAll(paire => !vivants.Contains(paire.Key));
-            bouchers.RemoveAll(paire => !vivants.Contains(paire.Key));
+            knappers.RemoveAll(paire => !alive.Contains(paire.Key));
+            butchers.RemoveAll(paire => !alive.Contains(paire.Key));
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look(ref tailleurs, "AAW_experienceArtisans",
-                LookMode.Value, LookMode.Value, ref tmpIdsTaille, ref tmpXpTaille);
-            Scribe_Collections.Look(ref bouchers, "AAW_experienceBouchers",
-                LookMode.Value, LookMode.Value, ref tmpIdsBoucherie, ref tmpXpBoucherie);
+            Scribe_Collections.Look(ref knappers, "AAW_experienceArtisans",
+                LookMode.Value, LookMode.Value, ref tmpKnappingIds, ref tmpKnappingXp);
+            Scribe_Collections.Look(ref butchers, "AAW_experienceBouchers",
+                LookMode.Value, LookMode.Value, ref tmpButcheryIds, ref tmpButcheryXp);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                if (tailleurs == null)
+                if (knappers == null)
                 {
-                    tailleurs = new Dictionary<int, float>();
+                    knappers = new Dictionary<int, float>();
                 }
-                if (bouchers == null)
+                if (butchers == null)
                 {
-                    bouchers = new Dictionary<int, float>();
+                    butchers = new Dictionary<int, float>();
                 }
             }
         }

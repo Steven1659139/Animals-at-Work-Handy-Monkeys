@@ -14,10 +14,10 @@ namespace AnimalsAtWork.Monkeys
     // 4) préparer des croquettes (viande + végétaux à proximité, sans outil).
     public class JobGiver_Tailleur : ThinkNode_JobGiver
     {
-        public const float Rayon = 12f;
-        public const float RayonRapatriement = 40f;
-        public const float TailleGibierMax = 0.5f;
-        private const int MorceauxEnAttenteMax = 3;
+        public const float Radius = 12f;
+        public const float RecallRadius = 40f;
+        public const float MaxGameSize = 0.5f;
+        private const int MaxPendingChunks = 3;
 
         // Throttle par singe des scans coûteux (même motif que le berger de
         // HerdingDogs) : sans lui, chaque singe oisif relançait jusqu'à une
@@ -26,87 +26,87 @@ namespace AnimalsAtWork.Monkeys
         // durent bien plus longtemps que l'intervalle, la cadence de travail
         // ne change pas. Registre transitoire, minuscule (un entier par
         // singe croisé), volontairement pas sauvegardé.
-        private const int IntervalleScan = 180;
-        private static readonly Dictionary<int, int> derniersScans = new Dictionary<int, int>();
+        private const int ScanInterval = 180;
+        private static readonly Dictionary<int, int> lastScans = new Dictionary<int, int>();
 
-        private static bool PeutScanner(Pawn singe)
+        private static bool CanScan(Pawn monkey)
         {
             int tick = Find.TickManager.TicksGame;
             // dernier <= tick garde contre le rechargement d'une partie plus
             // ancienne (l'horloge recule) : dans ce cas, on relance le scan.
-            if (derniersScans.TryGetValue(singe.thingIDNumber, out int dernier)
-                && dernier <= tick && tick - dernier < IntervalleScan)
+            if (lastScans.TryGetValue(monkey.thingIDNumber, out int last)
+                && last <= tick && tick - last < ScanInterval)
             {
                 return false;
             }
-            derniersScans[singe.thingIDNumber] = tick;
+            lastScans[monkey.thingIDNumber] = tick;
             return true;
         }
 
-        protected override Job TryGiveJob(Pawn singe)
+        protected override Job TryGiveJob(Pawn monkey)
         {
-            Map map = singe.Map;
-            if (map == null || singe.Faction != Faction.OfPlayer)
+            Map map = monkey.Map;
+            if (map == null || monkey.Faction != Faction.OfPlayer)
             {
                 return null;
             }
-            List<Thing> ateliers = map.listerThings.ThingsOfDef(AAW_DefOf.AAW_AtelierDesSinges);
-            if (ateliers.Count == 0)
+            List<Thing> workshops = map.listerThings.ThingsOfDef(AAW_DefOf.AAW_AtelierDesSinges);
+            if (workshops.Count == 0)
             {
                 return null;
             }
-            if (!PeutScanner(singe))
+            if (!CanScan(monkey))
             {
                 return null;
             }
 
-            Job travail = TravailImmediat(ateliers, map, singe);
-            if (travail != null)
+            Job work = ImmediateWork(workshops, map, monkey);
+            if (work != null)
             {
-                return travail;
+                return work;
             }
-            travail = Equipement(ateliers, map, singe);
-            if (travail != null)
+            work = Equipment(workshops, map, monkey);
+            if (work != null)
             {
-                return travail;
+                return work;
             }
-            travail = Rapatriement(ateliers, map, singe);
-            if (travail != null)
+            work = Recall(workshops, map, monkey);
+            if (work != null)
             {
-                return travail;
+                return work;
             }
-            return Croquettes(ateliers, map, singe);
+            return Kibble(workshops, map, monkey);
         }
 
         // --- Travail immédiat : taille (percuteur), boucherie (couteau) ---
 
-        private static Job TravailImmediat(List<Thing> ateliers, Map map, Pawn singe)
+        private static Job ImmediateWork(List<Thing> workshops, Map map, Pawn monkey)
         {
-            bool percuteur = OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur);
-            bool couteau = OutilUtility.Porte(singe, AAW_DefOf.AAW_Couteau);
-            if (!percuteur && !couteau)
+            bool hammerstone = OutilUtility.Carries(monkey, AAW_DefOf.AAW_Percuteur);
+            bool knife = OutilUtility.Carries(monkey, AAW_DefOf.AAW_Couteau);
+            if (!hammerstone && !knife)
             {
                 return null;
             }
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                Thing atelier = ateliers[i];
-                CompAtelier comp = atelier.TryGetComp<CompAtelier>();
+                Thing workshop = workshops[i];
+                CompAtelier comp = workshop.TryGetComp<CompAtelier>();
 
-                if (percuteur && Autorise(comp, TacheAtelier.Taille))
+                if (hammerstone && Allowed(comp, TacheAtelier.Taille))
                 {
-                    Thing morceau = MorceauProche(atelier, map, singe, Rayon);
-                    if (morceau != null)
+                    Thing chunk = NearbyChunk(workshop, map, monkey, Radius);
+                    if (chunk != null)
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPierre, morceau);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPierre, chunk);
                     }
                 }
-                if (couteau && Autorise(comp, TacheAtelier.Boucherie))
+                if (knife && Allowed(comp, TacheAtelier.Boucherie))
                 {
-                    Thing carcasse = CarcasseProche(atelier, map, singe);
-                    if (carcasse != null)
+                    Thing carcass = NearbyCarcass(workshop, map, monkey);
+                    if (carcass != null)
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_DebiterCarcasse, carcasse);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_DebiterCarcasse, carcass);
                     }
                 }
             }
@@ -115,44 +115,44 @@ namespace AnimalsAtWork.Monkeys
 
         // --- S'équiper : chercher l'outil manquant, sinon le façonner ------
 
-        private static Job Equipement(List<Thing> ateliers, Map map, Pawn singe)
+        private static Job Equipment(List<Thing> workshops, Map map, Pawn monkey)
         {
-            bool aPercuteur = OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur);
-            bool aCouteau = OutilUtility.Porte(singe, AAW_DefOf.AAW_Couteau);
+            bool hasHammerstone = OutilUtility.Carries(monkey, AAW_DefOf.AAW_Percuteur);
+            bool hasKnife = OutilUtility.Carries(monkey, AAW_DefOf.AAW_Couteau);
 
-            if (!aPercuteur)
+            if (!hasHammerstone)
             {
-                Thing morceau = MorceauATailler(ateliers, map, singe);
-                if (morceau != null)
+                Thing chunk = ChunkToKnap(workshops, map, monkey);
+                if (chunk != null)
                 {
-                    Job job = ChercherOutil(map, singe, AAW_DefOf.AAW_Percuteur, AAW_DefOf.AAW_PrendrePercuteur);
+                    Job job = FindTool(map, monkey, AAW_DefOf.AAW_Percuteur, AAW_DefOf.AAW_PrendrePercuteur);
                     if (job != null)
                     {
                         return job;
                     }
                     // Aucun percuteur nulle part : un maître tailleur se taille
                     // le sien, dans le morceau même qui attend d'être taillé.
-                    if (MaitriseUtility.EstMaitre(singe, Metier.Taille))
+                    if (MaitriseUtility.IsMaster(monkey, Metier.Taille))
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPercuteur, morceau);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerPercuteur, chunk);
                     }
                 }
             }
 
-            if (!aCouteau && TravailBoucherieExiste(ateliers, map, singe))
+            if (!hasKnife && ButcheryWorkExists(workshops, map, monkey))
             {
-                Job job = ChercherOutil(map, singe, AAW_DefOf.AAW_Couteau, AAW_DefOf.AAW_PrendreCouteau);
+                Job job = FindTool(map, monkey, AAW_DefOf.AAW_Couteau, AAW_DefOf.AAW_PrendreCouteau);
                 if (job != null)
                 {
                     return job;
                 }
                 // Aucun couteau nulle part : au percuteur, on frappe des éclats.
-                if (aPercuteur)
+                if (hasHammerstone)
                 {
-                    Thing morceau = MorceauPourOutil(ateliers, map, singe);
-                    if (morceau != null)
+                    Thing chunk = ChunkForTool(workshops, map, monkey);
+                    if (chunk != null)
                     {
-                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerCouteaux, morceau);
+                        return JobMaker.MakeJob(AAW_DefOf.AAW_TaillerCouteaux, chunk);
                     }
                 }
             }
@@ -161,56 +161,56 @@ namespace AnimalsAtWork.Monkeys
 
         // --- Rapatriement : ramener un morceau éloigné (percuteur requis) --
 
-        private static Job Rapatriement(List<Thing> ateliers, Map map, Pawn singe)
+        private static Job Recall(List<Thing> workshops, Map map, Pawn monkey)
         {
-            if (!OutilUtility.Porte(singe, AAW_DefOf.AAW_Percuteur))
+            if (!OutilUtility.Carries(monkey, AAW_DefOf.AAW_Percuteur))
             {
                 return null;
             }
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                Thing atelier = ateliers[i];
-                if (!Autorise(atelier.TryGetComp<CompAtelier>(), TacheAtelier.Taille))
+                Thing workshop = workshops[i];
+                if (!Allowed(workshop.TryGetComp<CompAtelier>(), TacheAtelier.Taille))
                 {
                     continue;
                 }
-                if (MorceauxPres(atelier, map, singe) >= MorceauxEnAttenteMax)
+                if (ChunksNear(workshop, map, monkey) >= MaxPendingChunks)
                 {
                     continue;
                 }
-                Thing lointain = MorceauProche(atelier, map, singe, RayonRapatriement,
-                    t => !PresDunAtelierDeTaille(t, ateliers));
-                if (lointain == null || !TryCaseDepot(atelier, map, singe, out IntVec3 depot))
+                Thing far = NearbyChunk(workshop, map, monkey, RecallRadius,
+                    t => !NearKnappingWorkshop(t, workshops));
+                if (far == null || !TryDropCell(workshop, map, monkey, out IntVec3 drop))
                 {
                     continue;
                 }
-                Job rapatriement = JobMaker.MakeJob(AAW_DefOf.AAW_RapporterMorceau, lointain, atelier, depot);
-                rapatriement.count = 1;
-                return rapatriement;
+                Job recall = JobMaker.MakeJob(AAW_DefOf.AAW_RapporterMorceau, far, workshop, drop);
+                recall.count = 1;
+                return recall;
             }
             return null;
         }
 
         // --- Croquettes : tâche cochée, viande et végétaux ----------------
 
-        private static Job Croquettes(List<Thing> ateliers, Map map, Pawn singe)
+        private static Job Kibble(List<Thing> workshops, Map map, Pawn monkey)
         {
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                Thing atelier = ateliers[i];
-                if (!Autorise(atelier.TryGetComp<CompAtelier>(), TacheAtelier.Croquettes))
+                Thing workshop = workshops[i];
+                if (!Allowed(workshop.TryGetComp<CompAtelier>(), TacheAtelier.Croquettes))
                 {
                     continue;
                 }
-                Thing viande = NourritureProche(atelier, map, singe, ThingCategoryDefOf.MeatRaw, null);
-                if (viande == null)
+                Thing meat = NearbyFood(workshop, map, monkey, ThingCategoryDefOf.MeatRaw, null);
+                if (meat == null)
                 {
                     continue;
                 }
-                Thing vegetal = NourritureProche(atelier, map, singe, ThingCategoryDefOf.PlantFoodRaw, viande);
-                if (vegetal != null)
+                Thing plant = NearbyFood(workshop, map, monkey, ThingCategoryDefOf.PlantFoodRaw, meat);
+                if (plant != null)
                 {
-                    return JobMaker.MakeJob(AAW_DefOf.AAW_PreparerCroquettes, viande, vegetal, atelier);
+                    return JobMaker.MakeJob(AAW_DefOf.AAW_PreparerCroquettes, meat, plant, workshop);
                 }
             }
             return null;
@@ -218,36 +218,36 @@ namespace AnimalsAtWork.Monkeys
 
         // --- Aides ---------------------------------------------------------
 
-        private static bool Autorise(CompAtelier comp, TacheAtelier tache)
+        private static bool Allowed(CompAtelier comp, TacheAtelier task)
         {
-            return comp == null || comp.Autorise(tache);
+            return comp == null || comp.Allowed(task);
         }
 
         // Un morceau qui attend d'être taillé près d'un atelier qui autorise
         // la taille, ou null s'il n'y a pas de travail de ce côté.
-        private static Thing MorceauATailler(List<Thing> ateliers, Map map, Pawn singe)
+        private static Thing ChunkToKnap(List<Thing> workshops, Map map, Pawn monkey)
         {
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                if (!Autorise(ateliers[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille))
+                if (!Allowed(workshops[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille))
                 {
                     continue;
                 }
-                Thing morceau = MorceauProche(ateliers[i], map, singe, RayonRapatriement);
-                if (morceau != null)
+                Thing chunk = NearbyChunk(workshops[i], map, monkey, RecallRadius);
+                if (chunk != null)
                 {
-                    return morceau;
+                    return chunk;
                 }
             }
             return null;
         }
 
-        private static bool TravailBoucherieExiste(List<Thing> ateliers, Map map, Pawn singe)
+        private static bool ButcheryWorkExists(List<Thing> workshops, Map map, Pawn monkey)
         {
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                if (Autorise(ateliers[i].TryGetComp<CompAtelier>(), TacheAtelier.Boucherie)
-                    && CarcasseProche(ateliers[i], map, singe) != null)
+                if (Allowed(workshops[i].TryGetComp<CompAtelier>(), TacheAtelier.Boucherie)
+                    && NearbyCarcass(workshops[i], map, monkey) != null)
                 {
                     return true;
                 }
@@ -255,93 +255,93 @@ namespace AnimalsAtWork.Monkeys
             return false;
         }
 
-        private static Job ChercherOutil(Map map, Pawn singe, ThingDef outil, JobDef prise)
+        private static Job FindTool(Map map, Pawn monkey, ThingDef tool, JobDef taken)
         {
-            Thing trouve = GenClosest.ClosestThingReachable(
-                singe.Position, map, ThingRequest.ForDef(outil),
-                PathEndMode.Touch, TraverseParms.For(singe), 9999f,
-                t => !t.IsForbidden(singe) && singe.CanReserve(t));
-            return trouve != null ? JobMaker.MakeJob(prise, trouve) : null;
+            Thing found = GenClosest.ClosestThingReachable(
+                monkey.Position, map, ThingRequest.ForDef(tool),
+                PathEndMode.Touch, TraverseParms.For(monkey), 9999f,
+                t => !t.IsForbidden(monkey) && monkey.CanReserve(t));
+            return found != null ? JobMaker.MakeJob(taken, found) : null;
         }
 
         // Un morceau pour façonner des outils : près de n'importe quel
         // atelier, quelles que soient ses tâches. L'outillage est un
         // méta-travail, pas de la taille de blocs.
-        private static Thing MorceauPourOutil(List<Thing> ateliers, Map map, Pawn singe)
+        private static Thing ChunkForTool(List<Thing> workshops, Map map, Pawn monkey)
         {
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                Thing morceau = MorceauProche(ateliers[i], map, singe, RayonRapatriement);
-                if (morceau != null)
+                Thing chunk = NearbyChunk(workshops[i], map, monkey, RecallRadius);
+                if (chunk != null)
                 {
-                    return morceau;
+                    return chunk;
                 }
             }
             return null;
         }
 
-        private static Thing MorceauProche(Thing atelier, Map map, Pawn singe, float rayon,
-            System.Predicate<Thing> filtre = null)
+        private static Thing NearbyChunk(Thing workshop, Map map, Pawn monkey, float radius,
+            System.Predicate<Thing> filter = null)
         {
             return GenClosest.ClosestThingReachable(
-                atelier.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Chunk),
-                PathEndMode.Touch, TraverseParms.For(singe), rayon,
-                t => !t.IsForbidden(singe)
+                workshop.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Chunk),
+                PathEndMode.Touch, TraverseParms.For(monkey), radius,
+                t => !t.IsForbidden(monkey)
                      && t.def.butcherProducts != null && t.def.butcherProducts.Count > 0
-                     && singe.CanReserve(t)
-                     && (filtre == null || filtre(t)));
+                     && monkey.CanReserve(t)
+                     && (filter == null || filter(t)));
         }
 
-        private static Thing CarcasseProche(Thing atelier, Map map, Pawn singe)
+        private static Thing NearbyCarcass(Thing workshop, Map map, Pawn monkey)
         {
             // La maîtrise ne change pas d'une carcasse à l'autre : lue une fois,
             // pas dans le prédicat.
-            bool maitre = MaitriseUtility.EstMaitre(singe, Metier.Boucherie);
+            bool master = MaitriseUtility.IsMaster(monkey, Metier.Boucherie);
             return GenClosest.ClosestThingReachable(
-                atelier.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Corpse),
-                PathEndMode.Touch, TraverseParms.For(singe), Rayon,
-                t => !t.IsForbidden(singe)
-                     && singe.CanReserve(t)
-                     && EstGibierAdmissible(t, maitre));
+                workshop.Position, map, ThingRequest.ForGroup(ThingRequestGroup.Corpse),
+                PathEndMode.Touch, TraverseParms.For(monkey), Radius,
+                t => !t.IsForbidden(monkey)
+                     && monkey.CanReserve(t)
+                     && IsEligibleGame(t, master));
         }
 
         // Gibier admissible : animal sauvage frais, jamais les bêtes de la
         // colonie. Un novice s'en tient au petit gibier (pas plus gros qu'un
         // chat) ; un maître boucher débite au sol des bêtes de toute taille.
-        private static bool EstGibierAdmissible(Thing t, bool maitre)
+        private static bool IsEligibleGame(Thing t, bool master)
         {
-            return t is Corpse carcasse
-                && carcasse.InnerPawn.RaceProps.Animal
-                && carcasse.InnerPawn.Faction != Faction.OfPlayer
-                && carcasse.GetRotStage() == RotStage.Fresh
-                && (maitre || carcasse.InnerPawn.RaceProps.baseBodySize <= TailleGibierMax);
+            return t is Corpse carcass
+                && carcass.InnerPawn.RaceProps.Animal
+                && carcass.InnerPawn.Faction != Faction.OfPlayer
+                && carcass.GetRotStage() == RotStage.Fresh
+                && (master || carcass.InnerPawn.RaceProps.baseBodySize <= MaxGameSize);
         }
 
-        private static Thing NourritureProche(Thing atelier, Map map, Pawn singe,
-            ThingCategoryDef categorie, Thing exclu)
+        private static Thing NearbyFood(Thing workshop, Map map, Pawn monkey,
+            ThingCategoryDef category, Thing excluded)
         {
             return GenClosest.ClosestThingReachable(
-                atelier.Position, map,
+                workshop.Position, map,
                 ThingRequest.ForGroup(ThingRequestGroup.FoodSourceNotPlantOrTree),
-                PathEndMode.Touch, TraverseParms.For(singe), Rayon,
-                t => !t.IsForbidden(singe)
-                     && t != exclu
-                     && EstCategorie(t, categorie)
+                PathEndMode.Touch, TraverseParms.For(monkey), Radius,
+                t => !t.IsForbidden(monkey)
+                     && t != excluded
+                     && IsCategory(t, category)
                      && t.stackCount >= JobDriver_PreparerCroquettes.IngredientsRequis
-                     && singe.CanReserve(t));
+                     && monkey.CanReserve(t));
         }
 
-        private static bool EstCategorie(Thing t, ThingCategoryDef categorie)
+        private static bool IsCategory(Thing t, ThingCategoryDef category)
         {
-            return t.def.thingCategories != null && t.def.thingCategories.Contains(categorie);
+            return t.def.thingCategories != null && t.def.thingCategories.Contains(category);
         }
 
-        private static bool PresDunAtelierDeTaille(Thing morceau, List<Thing> ateliers)
+        private static bool NearKnappingWorkshop(Thing chunk, List<Thing> workshops)
         {
-            for (int i = 0; i < ateliers.Count; i++)
+            for (int i = 0; i < workshops.Count; i++)
             {
-                if (Autorise(ateliers[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille)
-                    && morceau.Position.InHorDistOf(ateliers[i].Position, Rayon))
+                if (Allowed(workshops[i].TryGetComp<CompAtelier>(), TacheAtelier.Taille)
+                    && chunk.Position.InHorDistOf(workshops[i].Position, Radius))
                 {
                     return true;
                 }
@@ -349,16 +349,16 @@ namespace AnimalsAtWork.Monkeys
             return false;
         }
 
-        private static int MorceauxPres(Thing atelier, Map map, Pawn singe)
+        private static int ChunksNear(Thing workshop, Map map, Pawn monkey)
         {
             int n = 0;
-            List<Thing> morceaux = map.listerThings.ThingsInGroup(ThingRequestGroup.Chunk);
-            for (int i = 0; i < morceaux.Count; i++)
+            List<Thing> chunks = map.listerThings.ThingsInGroup(ThingRequestGroup.Chunk);
+            for (int i = 0; i < chunks.Count; i++)
             {
-                Thing t = morceaux[i];
-                if (!t.IsForbidden(singe)
+                Thing t = chunks[i];
+                if (!t.IsForbidden(monkey)
                     && t.def.butcherProducts != null && t.def.butcherProducts.Count > 0
-                    && t.Position.InHorDistOf(atelier.Position, Rayon))
+                    && t.Position.InHorDistOf(workshop.Position, Radius))
                 {
                     n++;
                 }
@@ -366,15 +366,15 @@ namespace AnimalsAtWork.Monkeys
             return n;
         }
 
-        private static bool TryCaseDepot(Thing atelier, Map map, Pawn singe, out IntVec3 depot)
+        private static bool TryDropCell(Thing workshop, Map map, Pawn monkey, out IntVec3 drop)
         {
-            return CellFinder.TryFindRandomCellNear(atelier.Position, map, 4,
+            return CellFinder.TryFindRandomCellNear(workshop.Position, map, 4,
                 c => c.Standable(map)
-                     && !c.IsForbidden(singe)
+                     && !c.IsForbidden(monkey)
                      && c.GetFirstItem(map) == null
-                     && singe.CanReserve(c)
-                     && singe.CanReach(c, PathEndMode.OnCell, Danger.Deadly),
-                out depot);
+                     && monkey.CanReserve(c)
+                     && monkey.CanReach(c, PathEndMode.OnCell, Danger.Deadly),
+                out drop);
         }
     }
 }

@@ -19,16 +19,16 @@ namespace AnimalsAtWork.Monkeys
             this.FailOnDespawnedNullOrForbidden(TargetIndex.A);
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
 
-            Toil ramasser = Toils_General.Wait(60);
-            ramasser.WithProgressBarToilDelay(TargetIndex.A);
-            yield return ramasser;
+            Toil pickUp = Toils_General.Wait(60);
+            pickUp.WithProgressBarToilDelay(TargetIndex.A);
+            yield return pickUp;
 
             yield return Toils_General.Do(delegate
             {
-                Thing pile = job.targetA.Thing;
-                IntVec3 position = pile.Position;
+                Thing stack = job.targetA.Thing;
+                IntVec3 position = stack.Position;
                 Map map = pawn.Map;
-                OutilUtility.RangerDansInventaire(pawn, pile.SplitOff(1), position, map);
+                OutilUtility.StoreInInventory(pawn, stack.SplitOff(1), position, map);
             });
         }
     }

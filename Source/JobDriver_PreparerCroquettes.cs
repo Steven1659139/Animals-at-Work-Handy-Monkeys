@@ -15,16 +15,16 @@ namespace AnimalsAtWork.Monkeys
         // Part prélevée sur chaque pile ; le JobGiver exige des piles au moins
         // aussi grosses.
         public const int IngredientsRequis = 20;
-        private const int CroquettesBase = 50;
+        private const int BaseKibble = 50;
 
-        private Thing viandePortee;
-        private Thing vegetalPorte;
+        private Thing carriedMeat;
+        private Thing carriedPlant;
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_References.Look(ref viandePortee, "AAW_viandePortee");
-            Scribe_References.Look(ref vegetalPorte, "AAW_vegetalPorte");
+            Scribe_References.Look(ref carriedMeat, "AAW_viandePortee");
+            Scribe_References.Look(ref carriedPlant, "AAW_vegetalPorte");
         }
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
@@ -39,8 +39,8 @@ namespace AnimalsAtWork.Monkeys
             this.FailOnDespawnedNullOrForbidden(TargetIndex.C);
             AddFinishAction(delegate
             {
-                Reposer(ref viandePortee);
-                Reposer(ref vegetalPorte);
+                PutBack(ref carriedMeat);
+                PutBack(ref carriedPlant);
             });
 
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch)
@@ -48,8 +48,8 @@ namespace AnimalsAtWork.Monkeys
                 .FailOn(() => job.targetA.Thing.stackCount < IngredientsRequis);
             yield return Toils_General.Do(delegate
             {
-                viandePortee = Prendre(job.targetA.Thing);
-                if (viandePortee == null)
+                carriedMeat = Take(job.targetA.Thing);
+                if (carriedMeat == null)
                 {
                     EndJobWith(JobCondition.Incompletable);
                 }
@@ -60,8 +60,8 @@ namespace AnimalsAtWork.Monkeys
                 .FailOn(() => job.targetB.Thing.stackCount < IngredientsRequis);
             yield return Toils_General.Do(delegate
             {
-                vegetalPorte = Prendre(job.targetB.Thing);
-                if (vegetalPorte == null)
+                carriedPlant = Take(job.targetB.Thing);
+                if (carriedPlant == null)
                 {
                     EndJobWith(JobCondition.Incompletable);
                 }
@@ -69,46 +69,46 @@ namespace AnimalsAtWork.Monkeys
 
             yield return Toils_Goto.GotoThing(TargetIndex.C, PathEndMode.Touch);
 
-            Toil preparation = Toils_General.Wait(MaitriseUtility.DureeTravail(pawn, Metier.Boucherie));
+            Toil preparation = Toils_General.Wait(MaitriseUtility.WorkDuration(pawn, Metier.Boucherie));
             preparation.WithProgressBarToilDelay(TargetIndex.C);
             // Les deux ingrédients doivent encore être sur lui : un objet
             // détruit ou sorti de l'inventaire en cours de route arrête tout.
-            preparation.FailOn(() => !PorteEncore(viandePortee) || !PorteEncore(vegetalPorte));
-            Ambiance.Habiller(preparation, TargetIndex.C, "Cook", "Recipe_CookMeal");
+            preparation.FailOn(() => !StillCarries(carriedMeat) || !StillCarries(carriedPlant));
+            Ambiance.Dress(preparation, TargetIndex.C, "Cook", "Recipe_CookMeal");
             yield return preparation;
 
             yield return Toils_General.Do(delegate
             {
-                Thing atelier = job.targetC.Thing;
+                Thing workshop = job.targetC.Thing;
                 Map map = pawn.Map;
-                viandePortee.Destroy();
-                vegetalPorte.Destroy();
-                viandePortee = null;
-                vegetalPorte = null;
+                carriedMeat.Destroy();
+                carriedPlant.Destroy();
+                carriedMeat = null;
+                carriedPlant = null;
 
-                Thing croquettes = ThingMaker.MakeThing(ThingDefOf.Kibble);
-                croquettes.stackCount = Mathf.RoundToInt(CroquettesBase * MaitriseUtility.Rendement(pawn, Metier.Boucherie));
-                GenPlace.TryPlaceThing(croquettes, atelier.Position, map, ThingPlaceMode.Near);
+                Thing kibble = ThingMaker.MakeThing(ThingDefOf.Kibble);
+                kibble.stackCount = Mathf.RoundToInt(BaseKibble * MaitriseUtility.Yield(pawn, Metier.Boucherie));
+                GenPlace.TryPlaceThing(kibble, workshop.Position, map, ThingPlaceMode.Near);
 
-                MaitriseUtility.GagnerExperience(pawn, Metier.Boucherie);
+                MaitriseUtility.GainExperience(pawn, Metier.Boucherie);
             });
         }
 
-        private bool PorteEncore(Thing ingredient)
+        private bool StillCarries(Thing ingredient)
         {
             return ingredient != null && pawn.inventory.innerContainer.Contains(ingredient);
         }
 
         // Prélève la part sur la pile et la range dans l'inventaire du singe ;
         // null si l'inventaire a refusé (la part est alors au sol).
-        private Thing Prendre(Thing pile)
+        private Thing Take(Thing stack)
         {
-            Thing part = pile.SplitOff(IngredientsRequis);
-            return OutilUtility.RangerDansInventaire(pawn, part, pawn.Position, pawn.Map) ? part : null;
+            Thing part = stack.SplitOff(IngredientsRequis);
+            return OutilUtility.StoreInInventory(pawn, part, pawn.Position, pawn.Map) ? part : null;
         }
 
         // Job interrompu avant l'ouvrage : le singe repose l'ingrédient porté.
-        private void Reposer(ref Thing ingredient)
+        private void PutBack(ref Thing ingredient)
         {
             if (ingredient != null && !ingredient.Destroyed)
             {

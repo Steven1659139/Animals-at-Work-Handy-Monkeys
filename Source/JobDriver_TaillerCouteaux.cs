@@ -7,22 +7,22 @@ namespace AnimalsAtWork.Monkeys
     // qu'il garde sur lui. Le percuteur s'use à l'ouvrage.
     public class JobDriver_TaillerCouteaux : JobDriver_Ouvrage
     {
-        private const int CouteauxParMorceau = 3;
+        private const int KnivesPerChunk = 3;
 
         protected override Metier MetierExerce => Metier.Taille;
 
-        protected override ThingDef OutilRequis => AAW_DefOf.AAW_Percuteur;
+        protected override ThingDef RequiredTool => AAW_DefOf.AAW_Percuteur;
 
-        protected override string Effet => "CutStone";
+        protected override string Effect => "CutStone";
 
-        protected override string Son => "Recipe_MakeStoneBlocks";
+        protected override string Sound => "Recipe_MakeStoneBlocks";
 
         protected override void Terminer()
         {
-            OutilUtility.TaillerDepuisMorceau(pawn, job.targetA.Thing,
-                AAW_DefOf.AAW_Couteau, CouteauxParMorceau);
-            OutilUtility.UserOutil(pawn, AAW_DefOf.AAW_Percuteur);
-            MaitriseUtility.GagnerExperience(pawn, Metier.Taille);
+            OutilUtility.KnapFromChunk(pawn, job.targetA.Thing,
+                AAW_DefOf.AAW_Couteau, KnivesPerChunk);
+            OutilUtility.WearTool(pawn, AAW_DefOf.AAW_Percuteur);
+            MaitriseUtility.GainExperience(pawn, Metier.Taille);
         }
     }
 }

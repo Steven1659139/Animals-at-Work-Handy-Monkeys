@@ -14,45 +14,45 @@ namespace AnimalsAtWork.Monkeys
     {
         protected override Metier MetierExerce => Metier.Boucherie;
 
-        protected override ThingDef OutilRequis => AAW_DefOf.AAW_Couteau;
+        protected override ThingDef RequiredTool => AAW_DefOf.AAW_Couteau;
 
-        protected override string Effet => "ButcherFlesh";
+        protected override string Effect => "ButcherFlesh";
 
-        protected override string Son => "Recipe_ButcherCorpseFlesh";
+        protected override string Sound => "Recipe_ButcherCorpseFlesh";
 
-        protected override float FacteurDuree => FacteurGabarit();
+        protected override float DurationFactor => SizeFactor();
 
         // Rapporté au petit gibier : 1 pour tout ce qui tient sous le plafond
         // novice, puis proportionnel au gabarit (un muffalo ≈ 5, un thrumbo ≈ 8).
-        private float FacteurGabarit()
+        private float SizeFactor()
         {
-            Corpse carcasse = (Corpse)job.targetA.Thing;
+            Corpse carcass = (Corpse)job.targetA.Thing;
             return Mathf.Max(1f,
-                carcasse.InnerPawn.RaceProps.baseBodySize / JobGiver_Tailleur.TailleGibierMax);
+                carcass.InnerPawn.RaceProps.baseBodySize / JobGiver_Tailleur.MaxGameSize);
         }
 
         protected override void Terminer()
         {
-            Corpse carcasse = (Corpse)job.targetA.Thing;
-            IntVec3 position = carcasse.Position;
+            Corpse carcass = (Corpse)job.targetA.Thing;
+            IntVec3 position = carcass.Position;
             Map map = pawn.Map;
-            List<Thing> produits = carcasse.ButcherProducts(pawn,
-                MaitriseUtility.Rendement(pawn, Metier.Boucherie)).ToList();
-            ThingDef sang = carcasse.InnerPawn.RaceProps.BloodDef;
-            int flaques = Mathf.Clamp(Mathf.RoundToInt(3f * FacteurGabarit()), 3, 12);
-            carcasse.Destroy();
+            List<Thing> products = carcass.ButcherProducts(pawn,
+                MaitriseUtility.Yield(pawn, Metier.Boucherie)).ToList();
+            ThingDef blood = carcass.InnerPawn.RaceProps.BloodDef;
+            int puddles = Mathf.Clamp(Mathf.RoundToInt(3f * SizeFactor()), 3, 12);
+            carcass.Destroy();
 
-            if (sang != null)
+            if (blood != null)
             {
-                FilthMaker.TryMakeFilth(position, map, sang, flaques);
+                FilthMaker.TryMakeFilth(position, map, blood, puddles);
             }
-            for (int i = 0; i < produits.Count; i++)
+            for (int i = 0; i < products.Count; i++)
             {
-                GenPlace.TryPlaceThing(produits[i], position, map, ThingPlaceMode.Near);
+                GenPlace.TryPlaceThing(products[i], position, map, ThingPlaceMode.Near);
             }
 
-            MaitriseUtility.GagnerExperience(pawn, Metier.Boucherie);
-            OutilUtility.UserOutil(pawn, AAW_DefOf.AAW_Couteau);
+            MaitriseUtility.GainExperience(pawn, Metier.Boucherie);
+            OutilUtility.WearTool(pawn, AAW_DefOf.AAW_Couteau);
         }
     }
 }

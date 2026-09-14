@@ -11,33 +11,33 @@ namespace AnimalsAtWork.Monkeys
     {
         protected override Metier MetierExerce => Metier.Taille;
 
-        protected override ThingDef OutilRequis => AAW_DefOf.AAW_Percuteur;
+        protected override ThingDef RequiredTool => AAW_DefOf.AAW_Percuteur;
 
-        protected override string Effet => "CutStone";
+        protected override string Effect => "CutStone";
 
-        protected override string Son => "Recipe_MakeStoneBlocks";
+        protected override string Sound => "Recipe_MakeStoneBlocks";
 
         protected override void Terminer()
         {
-            Thing morceau = job.targetA.Thing;
-            List<ThingDefCountClass> produits = morceau.def.butcherProducts;
-            IntVec3 position = morceau.Position;
+            Thing chunk = job.targetA.Thing;
+            List<ThingDefCountClass> products = chunk.def.butcherProducts;
+            IntVec3 position = chunk.Position;
             Map map = pawn.Map;
-            morceau.Destroy();
+            chunk.Destroy();
 
-            if (produits != null)
+            if (products != null)
             {
-                float rendement = MaitriseUtility.Rendement(pawn, Metier.Taille);
-                for (int i = 0; i < produits.Count; i++)
+                float yield = MaitriseUtility.Yield(pawn, Metier.Taille);
+                for (int i = 0; i < products.Count; i++)
                 {
-                    Thing blocs = ThingMaker.MakeThing(produits[i].thingDef);
-                    blocs.stackCount = Mathf.Max(1, Mathf.RoundToInt(produits[i].count * rendement));
-                    GenPlace.TryPlaceThing(blocs, position, map, ThingPlaceMode.Near);
+                    Thing blocks = ThingMaker.MakeThing(products[i].thingDef);
+                    blocks.stackCount = Mathf.Max(1, Mathf.RoundToInt(products[i].count * yield));
+                    GenPlace.TryPlaceThing(blocks, position, map, ThingPlaceMode.Near);
                 }
             }
 
-            MaitriseUtility.GagnerExperience(pawn, Metier.Taille);
-            OutilUtility.UserOutil(pawn, AAW_DefOf.AAW_Percuteur);
+            MaitriseUtility.GainExperience(pawn, Metier.Taille);
+            OutilUtility.WearTool(pawn, AAW_DefOf.AAW_Percuteur);
         }
     }
 }
