@@ -16,6 +16,12 @@
   </modDependencies>
   <loadAfter>
     <li>brrainz.harmony</li>
+
+    <li>el.kenshifauna</li>
+    <li>ellenot.vaelkorrcreatures</li>
+    <li>erin.fluffyfauna</li>
+    <li>jtc.nordberg</li>
+    <li>Romyashi.WrithingTree</li>
   </loadAfter>
   <description>Monkeys cut stone, haul chunks, butcher small game and make kibble at their own workbench. This is the third module of the Animals at Work series.
 
