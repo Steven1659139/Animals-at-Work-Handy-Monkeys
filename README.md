@@ -17,12 +17,18 @@ Third module of the **Animals at Work** series for RimWorld 1.6: animals doing u
 
 ## For animal mod authors
 
-Make your species eligible for crafting with a two-line patch:
+Already covered, when their mod is present: the gorilla (Odyssey), the gorillo (Kenshi Fauna), the sakarn (Vaelkorr Creatures), the red panda (Fluffy Fauna), the yeti (Nordberg) and the writhing puppet (Writhing Tree).
+
+To add your own species, drop this in a file under your mod's `Patches/` folder. `MayRequire` makes the operation vanish when Handy Monkeys is not installed, so it is safe to ship unconditionally; RimWorld only reads it on a list item, hence the sequence:
 
 ```xml
-<Operation Class="PatchOperationAddModExtension">
-  <xpath>Defs/ThingDef[defName="YourAnimal"]</xpath>
-  <value><li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" /></value>
+<Operation Class="PatchOperationSequence">
+  <operations>
+    <li Class="PatchOperationAddModExtension" MayRequire="royaltea.animalsatwork.monkeys">
+      <xpath>Defs/ThingDef[defName="YourAnimal"]</xpath>
+      <value><li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" /></value>
+    </li>
+  </operations>
 </Operation>
 ```
 

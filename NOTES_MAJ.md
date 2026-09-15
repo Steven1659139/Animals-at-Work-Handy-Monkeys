@@ -1,8 +1,6 @@
 # Notes de mise à jour (prochaine version) / Change notes (next update)
 
-Aucun changement de gameplay n'est en attente pour l'instant : la prochaine publication ne
-contient qu'une recompilation de l'assembly et la mise à jour de la description
-(liens vers les autres modules de la série). Notes prêtes à coller :
+Notes prêtes à coller :
 
 ## English
 
@@ -10,8 +8,9 @@ contient qu'une recompilation de l'assembly et la mise à jour de la description
 
 - The assembly has been rebuilt for RimWorld 1.6.
 - The Workshop description has been updated with links to the rest of the Animals at Work series (Plowing, Herding Dogs, Pest Control).
+- **Six modded species can now be trained as crafters** when their mod is present: the gorilla (Odyssey), the gorillo (Kenshi Fauna), the sakarn (Vaelkorr Creatures), the red panda (Fluffy Fauna), the yeti (Nordberg) and the writhing puppet (Writhing Tree). Nothing to configure. Thanks to zwei2stein for the contribution.
 
-There are no gameplay changes and nothing to do on your side.
+Nothing to do on your side.
 
 ## Français
 
@@ -19,5 +18,6 @@ There are no gameplay changes and nothing to do on your side.
 
 - L'assembly a été recompilée pour RimWorld 1.6.
 - La description Workshop a été mise à jour avec les liens vers le reste de la série Animals at Work (labour animal, chiens de berger, lutte antiparasitaire).
+- **Six espèces de mods peuvent désormais être dressées à l'artisanat** quand leur mod est présent : le gorille (Odyssey), le gorillo (Kenshi Fauna), le sakarn (Vaelkorr Creatures), le panda roux (Fluffy Fauna), le yéti (Nordberg) et la marionnette tordue (Writhing Tree). Rien à régler. Merci à zwei2stein pour la contribution.
 
-Il n'y a aucun changement de gameplay et rien à faire de votre côté.
+Rien à faire de votre côté.

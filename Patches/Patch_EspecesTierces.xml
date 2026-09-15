@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- Espèces de mods tiers aux mains habiles. Chaque opération ne s'applique
+       que si son mod est actif. RimWorld ne lit MayRequire que sur les
+       éléments d'une liste, jamais sur une Operation de premier niveau :
+       d'où la séquence. Contribution de zwei2stein. -->
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAddModExtension" MayRequire="ludeon.rimworld.odyssey">
+        <xpath>Defs/ThingDef[defName="Gorilla"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+
+      <li Class="PatchOperationAddModExtension" MayRequire="el.kenshifauna">
+        <xpath>Defs/ThingDef[defName="KenshiFauna_Gorillo"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+
+      <li Class="PatchOperationAddModExtension" MayRequire="ellenot.vaelkorrcreatures">
+        <xpath>Defs/ThingDef[defName="VKC_Sakarn_Race"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+
+      <li Class="PatchOperationAddModExtension" MayRequire="erin.fluffyfauna">
+        <xpath>Defs/ThingDef[defName="ERN_Redpanda"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+
+      <li Class="PatchOperationAddModExtension" MayRequire="jtc.nordberg">
+        <xpath>Defs/ThingDef[defName="Nordberg_ROE_Yeti"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+
+      <li Class="PatchOperationAddModExtension" MayRequire="romyashi.writhingtree">
+        <xpath>Defs/ThingDef[defName="Romy_WrithingPuppet"]</xpath>
+        <value>
+          <li Class="AnimalsAtWork.Monkeys.ModExtension_MainsHabiles" />
+        </value>
+      </li>
+    </operations>
+  </Operation>
+
+</Patch>
